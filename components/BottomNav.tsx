@@ -4,66 +4,46 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const NAV_ITEMS = [
-  {
-    href: "/",
-    label: "Dashboard",
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="3" y="3" width="7" height="7" rx="1" />
-        <rect x="14" y="3" width="7" height="7" rx="1" />
-        <rect x="3" y="14" width="7" height="7" rx="1" />
-        <rect x="14" y="14" width="7" height="7" rx="1" />
-      </svg>
-    ),
-  },
-  {
-    href: "/transactions",
-    label: "Transaksi",
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <line x1="8" y1="6" x2="21" y2="6" />
-        <line x1="8" y1="12" x2="21" y2="12" />
-        <line x1="8" y1="18" x2="21" y2="18" />
-        <line x1="3" y1="6" x2="3.01" y2="6" />
-        <line x1="3" y1="12" x2="3.01" y2="12" />
-        <line x1="3" y1="18" x2="3.01" y2="18" />
-      </svg>
-    ),
-  },
+const NAV = [
+  { href: "/", label: "Beranda", icon: "⬡" },
+  { href: "/transactions", label: "Transaksi", icon: "≡" },
 ];
 
 export default function BottomNav() {
   const pathname = usePathname();
 
   return (
-    <nav
-      className="fixed bottom-0 left-0 right-0 z-50"
-      style={{ background: "var(--bg)", borderTop: "1px solid var(--border-mid)" }}
-    >
-      <div className="flex max-w-sm mx-auto">
-        {NAV_ITEMS.map((item) => {
-          const isActive = pathname === item.href;
+    <nav className="fixed bottom-0 left-0 right-0 z-50"
+      style={{
+        background: "var(--surface)",
+        borderTop: "1px solid var(--border)",
+        paddingBottom: "env(safe-area-inset-bottom)",
+        boxShadow: "0 -4px 20px rgba(0,0,0,0.08)",
+        backdropFilter: "blur(20px)",
+        WebkitBackdropFilter: "blur(20px)",
+      }}>
+      <div className="flex max-w-lg mx-auto">
+        {NAV.map(item => {
+          const active = pathname === item.href;
           return (
             <Link
               key={item.href}
               href={item.href}
-              className="flex-1 flex flex-col items-center gap-1.5 py-4 transition-colors relative"
-              style={{ color: isActive ? "var(--text)" : "var(--text-muted)" }}
+              className="flex-1 flex flex-col items-center py-2.5 gap-0.5 transition-all active:scale-95"
             >
-              {item.icon}
-              <span
-                className="text-[9px] font-medium tracking-widest uppercase"
-                style={{ color: isActive ? "var(--text)" : "var(--text-muted)" }}
-              >
+              {/* Active pill */}
+              <div className={`w-10 h-7 flex items-center justify-center rounded-xl text-base transition-all
+                ${active
+                  ? "text-white"
+                  : ""}`}
+                style={active ? { background: "var(--brand)" } : { color: "var(--text-muted)" }}>
+                {item.icon}
+              </div>
+              <span className={`text-xs font-medium transition-colors
+                ${active ? "" : ""}`}
+                style={{ color: active ? "var(--brand)" : "var(--text-muted)" }}>
                 {item.label}
               </span>
-              {isActive && (
-                <span
-                  className="absolute bottom-0 left-1/2 -translate-x-1/2 w-6 h-px"
-                  style={{ background: "var(--text)" }}
-                />
-              )}
             </Link>
           );
         })}

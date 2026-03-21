@@ -1,55 +1,21 @@
 "use client";
-// app/page.tsx
+// app/page.tsx — Dashboard utama
 
 import { useEffect, useState } from "react";
 import BalanceCard from "@/components/BalanceCard";
 import CategoryChart from "@/components/CategoryChart";
 import TransactionList from "@/components/TransactionList";
-import { useTheme } from "@/components/ThemeProvider";
+import ExportButton from "@/components/ExportButton";
 import { MonthlySummary, Transaction } from "@/lib/types";
 
 declare global {
   interface Window {
-    Telegram?: { WebApp?: { initData?: string; ready?: () => void; expand?: () => void } };
+    Telegram?: { WebApp?: { initData?: string; ready?: () => void; expand?: () => void; colorScheme?: string } };
   }
 }
 
-function Skeleton() {
-  return <div className="animate-pulse rounded-xl h-full w-full" style={{ background: "var(--skeleton)" }} />;
-}
-
-function ThemeToggle() {
-  const { theme, toggle } = useTheme();
-  const isDark = theme === "dark";
-
-  return (
-    <button
-      onClick={toggle}
-      className="w-9 h-9 rounded-xl flex items-center justify-center transition-colors"
-      style={{ background: "var(--surface)", border: "1px solid var(--border-mid)" }}
-      aria-label="Toggle theme"
-    >
-      {isDark ? (
-        // Sun icon — switch to light
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: "var(--text-muted)" }}>
-          <circle cx="12" cy="12" r="4" />
-          <line x1="12" y1="2" x2="12" y2="4" />
-          <line x1="12" y1="20" x2="12" y2="22" />
-          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
-          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
-          <line x1="2" y1="12" x2="4" y2="12" />
-          <line x1="20" y1="12" x2="22" y2="12" />
-          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
-          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
-        </svg>
-      ) : (
-        // Moon icon — switch to dark
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: "var(--text-muted)" }}>
-          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-        </svg>
-      )}
-    </button>
-  );
+function Skeleton({ h = "h-10", w = "w-full" }: { h?: string; w?: string }) {
+  return <div className={`skeleton ${h} ${w} rounded-2xl`} />;
 }
 
 export default function DashboardPage() {
@@ -57,96 +23,102 @@ export default function DashboardPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [userName, setUserName] = useState("Sobat");
 
   useEffect(() => {
     const tg = window.Telegram?.WebApp;
     tg?.ready?.();
     tg?.expand?.();
+
     const initData = tg?.initData;
 
+    // Parse user name from initData
+    try {
+      const params = new URLSearchParams(initData ?? "");
+      const user = JSON.parse(params.get("user") ?? "{}");
+      if (user.first_name) setUserName(user.first_name);
+    } catch {}
+
     if (!initData) {
-      setError("Buka melalui bot Telegram.");
+      setError("Buka melalui bot Telegram untuk melihat data keuangan kamu.");
       setLoading(false);
       return;
     }
 
     async function fetchData() {
       try {
-        const [summaryRes, txRes] = await Promise.all([
-          fetch("/api/summary", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ initData }),
-          }),
-          fetch("/api/transactions", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ initData, limit: 5 }),
-          }),
+        const [sRes, tRes] = await Promise.all([
+          fetch("/api/summary", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ initData }) }),
+          fetch("/api/transactions", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ initData, limit: 5 }) }),
         ]);
-
-        if (!summaryRes.ok) throw new Error("Gagal");
-        const [summaryData, txData] = await Promise.all([summaryRes.json(), txRes.json()]);
-        setSummary(summaryData);
-        setTransactions(txData);
+        if (!sRes.ok) throw new Error("Gagal mengambil data");
+        const [s, t] = await Promise.all([sRes.json(), tRes.json()]);
+        setSummary(s);
+        setTransactions(t);
       } catch {
-        setError("Gagal memuat data.");
+        setError("Gagal memuat data. Coba lagi.");
       } finally {
         setLoading(false);
       }
     }
-
     fetchData();
   }, []);
 
+  const hour = new Date().getHours();
+  const greeting = hour < 11 ? "Selamat Pagi" : hour < 15 ? "Selamat Siang" : hour < 18 ? "Selamat Sore" : "Selamat Malam";
+
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen gap-3">
-        <div className="w-px h-12" style={{ background: "var(--border-mid)" }} />
-        <p className="text-[10px] tracking-[0.3em] uppercase" style={{ color: "var(--text-muted)" }}>{error}</p>
-        <div className="w-px h-12" style={{ background: "var(--border-mid)" }} />
+      <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center gap-3">
+        <span className="text-6xl">⚠️</span>
+        <p className="font-semibold" style={{ color: "var(--text)" }}>Akses Dibatasi</p>
+        <p className="text-sm" style={{ color: "var(--text-muted)" }}>{error}</p>
       </div>
     );
   }
 
   return (
-    <div className="px-4 pt-6 space-y-6">
+    <div className="px-4 pt-4 pb-2 space-y-4">
       {/* Header */}
-      <div className="flex items-end justify-between">
+      <div className="flex items-center justify-between animate-fade-up">
         <div>
-          <p className="text-[9px] tracking-[0.35em] uppercase mb-1" style={{ color: "var(--text-muted)" }}>
-            Financial Tracker
-          </p>
-          <h1 className="text-2xl font-bold tracking-tight" style={{ color: "var(--text)" }}>HiFinance</h1>
+          <p className="text-xs font-medium" style={{ color: "var(--text-muted)" }}>{greeting} 👋</p>
+          <h1 className="text-lg font-extrabold" style={{ color: "var(--text)" }}>{userName}</h1>
         </div>
-        <ThemeToggle />
+        {!loading && <ExportButton />}
       </div>
 
       {/* Balance Card */}
-      {loading ? <div className="h-44"><Skeleton /></div> : summary ? <BalanceCard summary={summary} /> : null}
+      <div className="animate-fade-up-1">
+        {loading ? <Skeleton h="h-44" /> : summary && <BalanceCard summary={summary} />}
+      </div>
 
-      {/* Chart */}
-      <div>
-        <p className="text-[9px] tracking-[0.3em] uppercase mb-4" style={{ color: "var(--text-muted)" }}>
-          Pengeluaran
-        </p>
-        <div className="rounded-2xl p-4" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
-          {loading ? <div className="h-48"><Skeleton /></div> : summary ? <CategoryChart data={summary.expense_by_category} /> : null}
-        </div>
+      {/* Category Chart */}
+      <div className="card p-4 animate-fade-up-2">
+        <h2 className="text-xs font-bold uppercase tracking-wide mb-3" style={{ color: "var(--text-muted)" }}>
+          Pengeluaran per Kategori
+        </h2>
+        {loading ? <Skeleton h="h-48" /> : summary && <CategoryChart data={summary.expense_by_category} />}
       </div>
 
       {/* Recent Transactions */}
-      <div>
-        <div className="flex items-center justify-between mb-4">
-          <p className="text-[9px] tracking-[0.3em] uppercase" style={{ color: "var(--text-muted)" }}>Terbaru</p>
-          <a href="/transactions" className="text-[9px] tracking-widest uppercase transition-colors"
-            style={{ color: "var(--text-muted)" }}>
-            Lihat semua →
+      <div className="card p-4 animate-fade-up-3">
+        <div className="flex items-center justify-between mb-1">
+          <h2 className="text-xs font-bold uppercase tracking-wide" style={{ color: "var(--text-muted)" }}>
+            Transaksi Terbaru
+          </h2>
+          <a href="/transactions" className="text-xs font-semibold" style={{ color: "var(--brand)" }}>
+            Semua →
           </a>
         </div>
-        <div className="rounded-2xl px-4" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
-          {loading ? <div className="h-40"><Skeleton /></div> : <TransactionList transactions={transactions} />}
-        </div>
+
+        {loading ? (
+          <div className="space-y-3 mt-3">
+            {[1,2,3].map(i => <Skeleton key={i} h="h-12" />)}
+          </div>
+        ) : (
+          <TransactionList transactions={transactions} />
+        )}
       </div>
     </div>
   );

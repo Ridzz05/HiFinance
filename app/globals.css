@@ -1,58 +1,117 @@
-@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap");
 @import "tailwindcss";
 
-/* ── Dark theme (default) ── */
-:root,
-[data-theme="dark"] {
-  --bg: #000000;
-  --surface: #0a0a0a;
-  --surface-2: #111111;
-  --border: rgba(255, 255, 255, 0.05);
-  --border-mid: rgba(255, 255, 255, 0.08);
-  --text: #ffffff;
-  --text-muted: #555555;
-  --text-dim: #2a2a2a;
-  --income: #ffffff;
-  --expense: #444444;
-  --avatar-bg: #111111;
-  --avatar-border: #1f1f1f;
-  --avatar-text: #444444;
-  --skeleton: rgba(255, 255, 255, 0.04);
-  --tooltip-bg: #0f0f0f;
-  --tooltip-border: #222222;
-}
+/* ── Design Tokens ── */
+:root {
+  /* Colors */
+  --brand: #7c5cfc;
+  --brand-light: #a78bfa;
+  --brand-dark: #5b21b6;
+  --income: #22c55e;
+  --expense: #f43f5e;
 
-/* ── Light theme ── */
-[data-theme="light"] {
-  --bg: #f9f9f9;
+  /* Surface */
+  --bg: #f4f5f9;
   --surface: #ffffff;
-  --surface-2: #f2f2f2;
-  --border: rgba(0, 0, 0, 0.06);
-  --border-mid: rgba(0, 0, 0, 0.09);
-  --text: #000000;
-  --text-muted: #888888;
-  --text-dim: #dddddd;
-  --income: #000000;
-  --expense: #aaaaaa;
-  --avatar-bg: #f0f0f0;
-  --avatar-border: #e0e0e0;
-  --avatar-text: #999999;
-  --skeleton: rgba(0, 0, 0, 0.06);
-  --tooltip-bg: #ffffff;
-  --tooltip-border: #e0e0e0;
+  --surface-2: #f8f8fc;
+  --border: rgba(0, 0, 0, 0.07);
+
+  /* Text */
+  --text: #0f0f1a;
+  --text-muted: #6b7090;
+  --text-dim: #c4c8e0;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 4px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 20px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04);
+
+  /* Misc */
+  --radius: 16px;
+  --radius-sm: 10px;
+  --skeleton: rgba(0,0,0,0.06);
 }
 
-* { box-sizing: border-box; }
+/* ── Dark Mode ── */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d0d14;
+    --surface: #14141f;
+    --surface-2: #1a1a28;
+    --border: rgba(255,255,255,0.07);
+    --text: #f0f0ff;
+    --text-muted: #7878a0;
+    --text-dim: #2c2c44;
+    --shadow-sm: 0 1px 4px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.04);
+    --shadow-md: 0 4px 20px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.04);
+    --skeleton: rgba(255,255,255,0.04);
+  }
+}
+
+/* ── Base ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  height: 100%;
+  /* Safe area for notch/home indicator */
+  padding-top: env(safe-area-inset-top);
+}
 
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Plus Jakarta Sans", -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   overscroll-behavior: none;
-  transition: background 0.2s ease, color 0.2s ease;
+  min-height: 100%;
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
-::-webkit-scrollbar { width: 0px; }
+/* ── Animations ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
 
-::selection { background: var(--text); color: var(--bg); }
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.animate-fade-up {
+  animation: fadeUp 0.3s ease both;
+}
+
+.animate-fade-up-1 { animation: fadeUp 0.3s ease 0.05s both; }
+.animate-fade-up-2 { animation: fadeUp 0.3s ease 0.10s both; }
+.animate-fade-up-3 { animation: fadeUp 0.3s ease 0.15s both; }
+
+/* ── Skeleton shimmer ── */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--skeleton) 25%,
+    rgba(255,255,255,0.04) 50%,
+    var(--skeleton) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  border-radius: var(--radius-sm);
+}
+
+/* ── Card base ── */
+.card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+}
+
+/* ── Scrollbar hidden ── */
+::-webkit-scrollbar { width: 0; height: 0; }
+
+/* ── Tap highlight ── */
+* { -webkit-tap-highlight-color: transparent; }
+
+/* ── Selection ── */
+::selection { background: var(--brand); color: #fff; }
