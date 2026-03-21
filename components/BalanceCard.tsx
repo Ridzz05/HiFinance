@@ -1,15 +1,7 @@
 "use client";
-// components/BalanceCard.tsx — Financial Navy Theme
+// components/BalanceCard.tsx — Nihilism style
 
 import { MonthlySummary } from "@/lib/types";
-
-function fmtShort(n: number) {
-  const abs = Math.abs(n);
-  if (abs >= 1_000_000_000) return `${(n / 1_000_000_000).toFixed(1)}M`;
-  if (abs >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}jt`;
-  if (abs >= 1_000) return `${(n / 1_000).toFixed(0)}rb`;
-  return n.toLocaleString("id-ID");
-}
 
 function fmtFull(n: number) {
   return new Intl.NumberFormat("id-ID", {
@@ -17,69 +9,76 @@ function fmtFull(n: number) {
   }).format(n);
 }
 
+function fmtShort(n: number) {
+  const a = Math.abs(n);
+  if (a >= 1_000_000_000) return `${(n/1_000_000_000).toFixed(2)}B`;
+  if (a >= 1_000_000) return `${(n/1_000_000).toFixed(2)}jt`;
+  if (a >= 1_000) return `${(n/1_000).toFixed(0)}rb`;
+  return n.toLocaleString("id-ID");
+}
+
 export default function BalanceCard({ summary }: { summary: MonthlySummary }) {
   const positive = summary.balance >= 0;
 
   return (
     <div
-      className="relative rounded-2xl overflow-hidden p-5 animate-fade-up"
+      className="rounded-2xl p-5 animate-fade-up"
       style={{
-        /* Deep navy → electric blue — "Bloomberg terminal" gradient */
-        background: "linear-gradient(135deg, #0f2952 0%, #1b4f9b 55%, #2563eb 100%)",
-        boxShadow: "0 8px 32px rgba(15,41,82,0.45), 0 2px 8px rgba(0,0,0,0.3)",
+        background: "var(--card-gradient)",
+        border: "1px solid var(--border-mid)",
+        boxShadow: "var(--shadow-md)",
       }}
     >
-      {/* Subtle grid lines — Bloomberg aesthetic */}
-      <div className="absolute inset-0 opacity-5 pointer-events-none"
-        style={{
-          backgroundImage: "repeating-linear-gradient(0deg,transparent,transparent 24px,rgba(255,255,255,0.6) 24px,rgba(255,255,255,0.6) 25px),repeating-linear-gradient(90deg,transparent,transparent 24px,rgba(255,255,255,0.6) 24px,rgba(255,255,255,0.6) 25px)",
-        }} />
-
-      {/* Light sweep glow */}
-      <div className="absolute top-0 right-0 w-48 h-48 rounded-full pointer-events-none"
-        style={{ background: "radial-gradient(circle, rgba(96,165,250,0.15), transparent 70%)", transform: "translate(25%, -25%)" }} />
-
-      {/* Period + badge */}
-      <div className="flex items-center justify-between mb-4 relative">
-        <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.45)" }}>
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
+        <span className="text-xs font-medium uppercase tracking-widest" style={{ color: "var(--text-muted)" }}>
           {summary.period.label}
-        </p>
-        <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${positive ? "bg-emerald-400/20 text-emerald-300" : "bg-rose-400/20 text-rose-300"}`}>
-          {positive ? "▲ Surplus" : "▼ Defisit"}
+        </span>
+        <span
+          className="text-xs font-semibold px-2 py-0.5 rounded-full mono"
+          style={{
+            background: positive ? "rgba(255,255,255,0.06)" : "rgba(255,255,255,0.04)",
+            color: positive ? "var(--text)" : "var(--text-muted)",
+            border: "1px solid var(--border)",
+          }}
+        >
+          {positive ? "+" : "–"}{fmtShort(Math.abs(summary.balance))}
         </span>
       </div>
 
-      {/* Balance */}
-      <div className="mb-5 relative">
-        <p className="text-xs font-medium text-white/50 mb-0.5">Total Saldo</p>
-        <p className={`text-[2rem] font-extrabold tracking-tight leading-none ${positive ? "text-white" : "text-rose-300"}`}>
-          {positive ? "" : "−"}{fmtFull(Math.abs(summary.balance))}
+      {/* Main balance */}
+      <div className="mb-6">
+        <p className="text-xs font-medium mb-1" style={{ color: "var(--text-muted)" }}>Saldo</p>
+        <p
+          className="text-4xl font-bold mono leading-none tracking-tight"
+          style={{ color: positive ? "var(--text)" : "var(--text-muted)" }}
+        >
+          {fmtFull(summary.balance)}
         </p>
       </div>
 
-      {/* Income / Expense grid */}
-      <div className="grid grid-cols-2 gap-2.5 relative">
-        {/* Income */}
-        <div className="rounded-xl p-3" style={{ background: "rgba(255,255,255,0.08)", backdropFilter: "blur(8px)" }}>
-          <div className="flex items-center gap-1.5 mb-1.5">
-            <div className="w-4 h-4 rounded-full bg-emerald-400 flex items-center justify-center text-[9px] text-white font-bold">↑</div>
-            <span className="text-white/50 text-xs">Masuk</span>
-          </div>
-          <p className="text-white font-bold text-sm">Rp {fmtShort(summary.total_income)}</p>
+      {/* Divider */}
+      <div className="mb-4" style={{ height: "1px", background: "var(--border)" }} />
+
+      {/* Stats */}
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <p className="text-xs mb-1" style={{ color: "var(--text-muted)" }}>Pendapatan</p>
+          <p className="text-base font-semibold mono" style={{ color: "var(--income)" }}>
+            +{fmtShort(summary.total_income)}
+          </p>
         </div>
-        {/* Expense */}
-        <div className="rounded-xl p-3" style={{ background: "rgba(255,255,255,0.08)", backdropFilter: "blur(8px)" }}>
-          <div className="flex items-center gap-1.5 mb-1.5">
-            <div className="w-4 h-4 rounded-full bg-rose-400 flex items-center justify-center text-[9px] text-white font-bold">↓</div>
-            <span className="text-white/50 text-xs">Keluar</span>
-          </div>
-          <p className="text-white font-bold text-sm">Rp {fmtShort(summary.total_expense)}</p>
+        <div className="text-right">
+          <p className="text-xs mb-1" style={{ color: "var(--text-muted)" }}>Pengeluaran</p>
+          <p className="text-base font-semibold mono" style={{ color: "var(--expense)" }}>
+            –{fmtShort(summary.total_expense)}
+          </p>
         </div>
       </div>
 
       {/* Footer */}
-      <p className="text-white/20 text-xs mt-3 text-right relative">
-        {summary.transaction_count} transaksi tercatat
+      <p className="text-xs mt-4" style={{ color: "var(--text-dim)" }}>
+        {summary.transaction_count} transaksi
       </p>
     </div>
   );

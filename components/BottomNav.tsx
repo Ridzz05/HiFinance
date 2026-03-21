@@ -1,27 +1,26 @@
 "use client";
-// components/BottomNav.tsx
+// components/BottomNav.tsx — Nihilism style
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const NAV = [
-  { href: "/", label: "Beranda", icon: "⬡" },
-  { href: "/transactions", label: "Transaksi", icon: "≡" },
+  { href: "/", label: "Overview" },
+  { href: "/transactions", label: "Transactions" },
 ];
 
 export default function BottomNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50"
+    <nav
+      className="fixed bottom-0 left-0 right-0 z-50"
       style={{
-        background: "var(--surface)",
+        background: "var(--bg)",
         borderTop: "1px solid var(--border)",
         paddingBottom: "env(safe-area-inset-bottom)",
-        boxShadow: "0 -4px 20px rgba(0,0,0,0.08)",
-        backdropFilter: "blur(20px)",
-        WebkitBackdropFilter: "blur(20px)",
-      }}>
+      }}
+    >
       <div className="flex max-w-lg mx-auto">
         {NAV.map(item => {
           const active = pathname === item.href;
@@ -29,21 +28,14 @@ export default function BottomNav() {
             <Link
               key={item.href}
               href={item.href}
-              className="flex-1 flex flex-col items-center py-2.5 gap-0.5 transition-all active:scale-95"
+              className="flex-1 flex flex-col items-center py-3.5 gap-1 text-xs font-medium tracking-wide transition-all active:opacity-60"
+              style={{
+                color: active ? "var(--text)" : "var(--text-muted)",
+                borderTop: active ? "2px solid var(--text)" : "2px solid transparent",
+                marginTop: "-1px",
+              }}
             >
-              {/* Active pill */}
-              <div className={`w-10 h-7 flex items-center justify-center rounded-xl text-base transition-all
-                ${active
-                  ? "text-white"
-                  : ""}`}
-                style={active ? { background: "var(--brand)" } : { color: "var(--text-muted)" }}>
-                {item.icon}
-              </div>
-              <span className={`text-xs font-medium transition-colors
-                ${active ? "" : ""}`}
-                style={{ color: active ? "var(--brand)" : "var(--text-muted)" }}>
-                {item.label}
-              </span>
+              {item.label}
             </Link>
           );
         })}
