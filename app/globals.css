@@ -3,52 +3,64 @@
 
 /* ── Dark (default) ── */
 :root, [data-theme="dark"] {
-  --bg:          #000000;
-  --surface:     #0c0c0c;
-  --border:      rgba(255,255,255,0.06);
-  --border-hi:   rgba(255,255,255,0.10);
-  --text:        #ffffff;
-  --text-2:      #888888;
-  --text-3:      #333333;
-  --income:      #ffffff;
-  --expense:     #555555;
+  --bg:               #000000;
+  --surface:          #0c0c0c;
+  --border:           rgba(255,255,255,0.06);
+  --border-hi:        rgba(255,255,255,0.10);
+  --text:             #ffffff;
+  --text-2:           #888888;
+  --text-3:           #282828;
+  --income:           #ffffff;
+  --expense:          #555555;
   --pill-active-bg:   #ffffff;
   --pill-active-text: #000000;
   --pill-bg:          #0c0c0c;
   --pill-text:        #888888;
-  --skeleton:    rgba(255,255,255,0.05);
-  --tooltip-bg:  #111111;
+  --skeleton:         rgba(255,255,255,0.05);
+  --tooltip-bg:       #111111;
+  --nav-h:            60px;
 }
 
 /* ── Light ── */
 [data-theme="light"] {
-  --bg:          #f7f7f7;
-  --surface:     #ffffff;
-  --border:      rgba(0,0,0,0.07);
-  --border-hi:   rgba(0,0,0,0.12);
-  --text:        #000000;
-  --text-2:      #777777;
-  --text-3:      #cccccc;
-  --income:      #000000;
-  --expense:     #aaaaaa;
+  --bg:               #f5f5f5;
+  --surface:          #ffffff;
+  --border:           rgba(0,0,0,0.07);
+  --border-hi:        rgba(0,0,0,0.11);
+  --text:             #000000;
+  --text-2:           #888888;
+  --text-3:           #e0e0e0;
+  --income:           #000000;
+  --expense:          #aaaaaa;
   --pill-active-bg:   #000000;
   --pill-active-text: #ffffff;
   --pill-bg:          #ffffff;
-  --pill-text:        #777777;
-  --skeleton:    rgba(0,0,0,0.06);
-  --tooltip-bg:  #ffffff;
+  --pill-text:        #888888;
+  --skeleton:         rgba(0,0,0,0.06);
+  --tooltip-bg:       #ffffff;
+  --nav-h:            60px;
 }
 
-/* ── Base ── */
+/* ── Base reset ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  height: 100%;
+  /* Telegram sets viewport meta — honour it */
+}
+
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Space Grotesk", -apple-system, BlinkMacSystemFont, sans-serif;
   -webkit-font-smoothing: antialiased;
   overscroll-behavior: none;
-  transition: background 0.15s, color 0.15s;
+  min-height: 100%;
+  /* space for BottomNav + device home indicator */
+  padding-bottom: calc(var(--nav-h) + env(safe-area-inset-bottom, 0px));
+  transition: background 0.15s ease, color 0.15s ease;
 }
+
 ::-webkit-scrollbar { width: 0; }
 ::selection { background: var(--text); color: var(--bg); }
 * { -webkit-tap-highlight-color: transparent; }
@@ -59,17 +71,21 @@ body {
   100% { background-position:  200% 0; }
 }
 .skeleton {
-  background: linear-gradient(90deg, var(--skeleton) 25%, rgba(128,128,128,0.04) 50%, var(--skeleton) 75%);
+  background: linear-gradient(90deg, var(--skeleton) 25%, rgba(128,128,128,0.03) 50%, var(--skeleton) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
+  border-radius: 12px;
 }
 
 /* ── Fade-up animations ── */
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(8px); }
+  from { opacity: 0; transform: translateY(10px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-.fade-0 { animation: fadeUp .2s ease both; }
-.fade-1 { animation: fadeUp .2s ease .07s both; }
-.fade-2 { animation: fadeUp .2s ease .14s both; }
-.fade-3 { animation: fadeUp .2s ease .21s both; }
+.fade-0 { animation: fadeUp .22s ease both; }
+.fade-1 { animation: fadeUp .22s ease .08s both; }
+.fade-2 { animation: fadeUp .22s ease .16s both; }
+.fade-3 { animation: fadeUp .22s ease .24s both; }
+
+/* ── Spin ── */
+@keyframes spin { to { transform: rotate(360deg); } }

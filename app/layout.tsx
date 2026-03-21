@@ -13,16 +13,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="id" suppressHydrationWarning>
       <head>
         <script src="https://telegram.org/js/telegram-web-app.js" async />
-        {/* Prevent theme flash */}
-        <script dangerouslySetInnerHTML={{ __html: `
-          (function(){var t=localStorage.getItem('hf-theme')||'dark';
-          document.documentElement.setAttribute('data-theme',t);})()
-        `}} />
+        {/* Prevent theme flash before hydration */}
+        <script dangerouslySetInnerHTML={{ __html: `(function(){var t=localStorage.getItem('hf-theme')||'dark';document.documentElement.setAttribute('data-theme',t);})()`}} />
       </head>
       <body>
-        <div className="max-w-sm mx-auto min-h-screen pb-20">
+        {/* Single centred column, max 390px (typical mobile width) */}
+        <main style={{ maxWidth: 390, margin: "0 auto", width: "100%" }}>
           {children}
-        </div>
+        </main>
         <BottomNav />
       </body>
     </html>
