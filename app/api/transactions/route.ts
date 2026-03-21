@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "initData tidak valid" }, { status: 401 });
   }
 
-  const limit = Math.min(body.limit ?? 20, 50);
+  const limit = Math.min(body.limit ?? 20, 500);
 
   const { data, error } = await getSupabase()
     .from("transactions")
