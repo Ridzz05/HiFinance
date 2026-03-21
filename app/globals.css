@@ -1,75 +1,113 @@
 @import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap");
 @import "tailwindcss";
 
-/* ── Design Tokens ── */
-:root {
-  /* Colors */
-  --brand: #7c5cfc;
-  --brand-light: #a78bfa;
-  --brand-dark: #5b21b6;
-  --income: #22c55e;
-  --expense: #f43f5e;
+/* ═══════════════════════════════════════════════
+   HIFINANCE — Financial Design System
+   Palette: Navy · Emerald · Gold · Slate
+   ═══════════════════════════════════════════════ */
 
-  /* Surface */
-  --bg: #f4f5f9;
-  --surface: #ffffff;
-  --surface-2: #f8f8fc;
-  --border: rgba(0, 0, 0, 0.07);
+/* ── Light Mode (default) ── */
+:root {
+  /* Brand — Professional Blue (trust, stability) */
+  --brand:        #1b4f9b;
+  --brand-mid:    #2563eb;
+  --brand-light:  #dbeafe;
+
+  /* Income — Emerald Green (growth, wealth) */
+  --income:       #059669;
+  --income-bg:    rgba(5, 150, 105, 0.08);
+
+  /* Expense — Crimson (loss, caution) */
+  --expense:      #dc2626;
+  --expense-bg:   rgba(220, 38, 38, 0.08);
+
+  /* Gold — Premium accent */
+  --gold:         #b45309;
+  --gold-light:   #fef3c7;
+
+  /* Surfaces */
+  --bg:           #f1f5f9;       /* Slate-100 — clean off-white */
+  --surface:      #ffffff;
+  --surface-2:    #f8fafc;       /* Slate-50 */
+  --border:       rgba(15, 23, 42, 0.08);
 
   /* Text */
-  --text: #0f0f1a;
-  --text-muted: #6b7090;
-  --text-dim: #c4c8e0;
+  --text:         #0f172a;       /* Slate-900 — deep navy */
+  --text-muted:   #64748b;       /* Slate-500 */
+  --text-dim:     #cbd5e1;       /* Slate-300 */
 
   /* Shadows */
-  --shadow-sm: 0 1px 4px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04);
-  --shadow-md: 0 4px 20px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04);
+  --shadow-sm:    0 1px 3px rgba(15,23,42,0.07), 0 0 0 1px rgba(15,23,42,0.05);
+  --shadow-md:    0 4px 24px rgba(15,23,42,0.10), 0 0 0 1px rgba(15,23,42,0.05);
+  --shadow-brand: 0 4px 16px rgba(27, 79, 155, 0.25);
 
   /* Misc */
-  --radius: 16px;
-  --radius-sm: 10px;
-  --skeleton: rgba(0,0,0,0.06);
+  --radius:       16px;
+  --radius-sm:    10px;
+  --skeleton:     rgba(15, 23, 42, 0.06);
 }
 
 /* ── Dark Mode ── */
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #0d0d14;
-    --surface: #14141f;
-    --surface-2: #1a1a28;
-    --border: rgba(255,255,255,0.07);
-    --text: #f0f0ff;
-    --text-muted: #7878a0;
-    --text-dim: #2c2c44;
-    --shadow-sm: 0 1px 4px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.04);
-    --shadow-md: 0 4px 20px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.04);
-    --skeleton: rgba(255,255,255,0.04);
+    /* Surface — Deep Navy (Bloomberg terminal feel) */
+    --bg:           #070f1e;
+    --surface:      #0d1b2e;
+    --surface-2:    #132138;
+    --border:       rgba(148, 163, 184, 0.08);
+
+    /* Brand stays but lighter in dark */
+    --brand:        #3b82f6;
+    --brand-mid:    #60a5fa;
+    --brand-light:  rgba(59, 130, 246, 0.15);
+
+    /* Income / Expense */
+    --income:       #10b981;
+    --income-bg:    rgba(16, 185, 129, 0.10);
+    --expense:      #f43f5e;
+    --expense-bg:   rgba(244, 63, 94, 0.10);
+
+    /* Gold */
+    --gold:         #f59e0b;
+    --gold-light:   rgba(245, 158, 11, 0.12);
+
+    /* Text */
+    --text:         #e2e8f0;     /* Slate-200 */
+    --text-muted:   #64748b;     /* Slate-500 */
+    --text-dim:     #1e293b;     /* Slate-800 */
+
+    /* Shadows */
+    --shadow-sm:    0 1px 4px rgba(0,0,0,0.35), 0 0 0 1px rgba(255,255,255,0.04);
+    --shadow-md:    0 6px 28px rgba(0,0,0,0.4),  0 0 0 1px rgba(255,255,255,0.04);
+    --shadow-brand: 0 4px 20px rgba(59,130,246,0.3);
+
+    --skeleton:     rgba(148, 163, 184, 0.05);
   }
 }
 
-/* ── Base ── */
+/* ── Base Reset ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 html {
   height: 100%;
-  /* Safe area for notch/home indicator */
   padding-top: env(safe-area-inset-top);
 }
 
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: "Plus Jakarta Sans", -apple-system, sans-serif;
+  font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overscroll-behavior: none;
   min-height: 100%;
   padding-bottom: env(safe-area-inset-bottom);
+  letter-spacing: -0.01em;
 }
 
 /* ── Animations ── */
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(12px); }
+  from { opacity: 0; transform: translateY(10px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
@@ -78,33 +116,39 @@ body {
   100% { background-position: 200% 0; }
 }
 
-.animate-fade-up {
-  animation: fadeUp 0.3s ease both;
-}
-
-.animate-fade-up-1 { animation: fadeUp 0.3s ease 0.05s both; }
-.animate-fade-up-2 { animation: fadeUp 0.3s ease 0.10s both; }
-.animate-fade-up-3 { animation: fadeUp 0.3s ease 0.15s both; }
+.animate-fade-up   { animation: fadeUp 0.28s ease both; }
+.animate-fade-up-1 { animation: fadeUp 0.28s ease 0.06s both; }
+.animate-fade-up-2 { animation: fadeUp 0.28s ease 0.12s both; }
+.animate-fade-up-3 { animation: fadeUp 0.28s ease 0.18s both; }
 
 /* ── Skeleton shimmer ── */
 .skeleton {
   background: linear-gradient(
     90deg,
     var(--skeleton) 25%,
-    rgba(255,255,255,0.04) 50%,
+    rgba(255,255,255,0.03) 50%,
     var(--skeleton) 75%
   );
   background-size: 200% 100%;
-  animation: shimmer 1.4s infinite;
+  animation: shimmer 1.5s infinite;
   border-radius: var(--radius-sm);
 }
 
-/* ── Card base ── */
+/* ── Card ── */
 .card {
   background: var(--surface);
   border-radius: var(--radius);
   box-shadow: var(--shadow-sm);
   border: 1px solid var(--border);
+}
+
+/* ── Section header ──  */
+.section-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
 }
 
 /* ── Scrollbar hidden ── */
