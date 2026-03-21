@@ -2,9 +2,11 @@
 // API Route: Ringkasan keuangan bulanan per user
 // Diproteksi dengan validasi Telegram initData
 
+export const dynamic = "force-dynamic";
+
 import { NextRequest, NextResponse } from "next/server";
 import { validateInitData } from "@/lib/validate-init-data";
-import { supabase } from "@/lib/supabase";
+import { getSupabase } from "@/lib/supabase";
 import { CategorySummary, MonthlySummary } from "@/lib/types";
 
 const MONTH_NAMES = [
@@ -32,7 +34,7 @@ export async function POST(req: NextRequest) {
   const startDate = new Date(year, month - 1, 1).toISOString();
   const endDate = new Date(year, month, 1).toISOString();
 
-  const { data: transactions, error } = await supabase
+  const { data: transactions, error } = await getSupabase()
     .from("transactions")
     .select("type, amount, category, note, created_at")
     .eq("user_id", telegramId)
@@ -44,7 +46,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  const rows = transactions ?? [];
+  type TxRow = { type: string; amount: number; category: string; note: string; created_at: string };
+  const rows: TxRow[] = transactions ?? [];
   const totalIncome = rows.filter(t => t.type === "income").reduce((s, t) => s + t.amount, 0);
   const totalExpense = rows.filter(t => t.type === "expense").reduce((s, t) => s + t.amount, 0);
 

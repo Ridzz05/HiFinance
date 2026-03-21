@@ -1,9 +1,11 @@
 // app/api/transactions/route.ts
 // API Route: Daftar transaksi terbaru per user
 
+export const dynamic = "force-dynamic";
+
 import { NextRequest, NextResponse } from "next/server";
 import { validateInitData } from "@/lib/validate-init-data";
-import { supabase } from "@/lib/supabase";
+import { getSupabase } from "@/lib/supabase";
 
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null);
@@ -18,7 +20,7 @@ export async function POST(req: NextRequest) {
 
   const limit = Math.min(body.limit ?? 20, 50);
 
-  const { data, error } = await supabase
+  const { data, error } = await getSupabase()
     .from("transactions")
     .select("id, type, amount, category, note, created_at")
     .eq("user_id", validated.user.id)
