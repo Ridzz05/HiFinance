@@ -1,122 +1,106 @@
 "use client";
-// components/TransactionList.tsx — Nihilism style
+// components/TransactionList.tsx
 
 import { Transaction } from "@/lib/types";
 
-// Short category labels (no emoji)
-const CAT_SHORT: Record<string, string> = {
-  Makanan: "MKN", Minuman: "MNM", Transport: "TRP", Belanja: "BLJ",
-  Kesehatan: "KSH", Hiburan: "HIB", Pendidikan: "PDK", Tagihan: "TGH",
-  Gaji: "GAJ", Investasi: "INV", Lainnya: "LNY",
+const fmt = (n: number) => {
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}jt`;
+  if (n >= 1_000) return `${(n / 1_000).toFixed(0)}rb`;
+  return `${n}`;
 };
 
-function fmtShort(n: number) {
-  if (n >= 1_000_000) return `${(n/1_000_000).toFixed(1)}jt`;
-  if (n >= 1_000) return `${(n/1_000).toFixed(0)}rb`;
-  return n.toLocaleString("id-ID");
+function formatDate(iso: string) {
+  const d = new Date(iso);
+  const today = new Date(); today.setHours(0,0,0,0);
+  const yesterday = new Date(today); yesterday.setDate(today.getDate()-1);
+  const day = new Date(iso); day.setHours(0,0,0,0);
+  if (day.getTime() === today.getTime()) return "Hari ini";
+  if (day.getTime() === yesterday.getTime()) return "Kemarin";
+  return d.toLocaleDateString("id-ID", { day: "numeric", month: "long" });
 }
 
-function groupByDate(txs: Transaction[]): { label: string; items: Transaction[] }[] {
-  const today = new Date(); today.setHours(0,0,0,0);
-  const yesterday = new Date(today); yesterday.setDate(today.getDate() - 1);
+function TxRow({ tx }: { tx: Transaction }) {
+  const isExp = tx.type === "expense";
+  const initials = tx.category.slice(0, 2).toUpperCase();
+  const time = new Date(tx.created_at).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
+
+  return (
+    <div style={{
+      display: "flex", alignItems: "center", gap: 12,
+      padding: "12px 0", borderBottom: "1px solid var(--border)",
+    }}>
+      {/* Initials */}
+      <div style={{
+        width: 38, height: 38, borderRadius: 10, flexShrink: 0,
+        display: "flex", alignItems: "center", justifyContent: "center",
+        background: "var(--surface)", border: "1px solid var(--border-hi)",
+        fontSize: 10, fontWeight: 700, letterSpacing: "0.05em", color: "var(--text-2)",
+      }}>
+        {initials}
+      </div>
+
+      {/* Info */}
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <p style={{ fontSize: 13, fontWeight: 600, color: "var(--text)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+          {tx.category}
+        </p>
+        <p style={{ fontSize: 11, color: "var(--text-2)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+          {tx.note || "—"} · {time}
+        </p>
+      </div>
+
+      {/* Amount */}
+      <p style={{ fontSize: 13, fontWeight: 700, color: isExp ? "var(--expense)" : "var(--income)", flexShrink: 0, fontVariantNumeric: "tabular-nums" }}>
+        {isExp ? "−" : "+"}Rp {fmt(tx.amount)}
+      </p>
+    </div>
+  );
+}
+
+function groupByDate(txs: Transaction[]) {
   const map = new Map<string, Transaction[]>();
   for (const tx of txs) {
-    const d = new Date(tx.created_at); d.setHours(0,0,0,0);
-    let label: string;
-    if (d.getTime() === today.getTime()) label = "Today";
-    else if (d.getTime() === yesterday.getTime()) label = "Yesterday";
-    else label = d.toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" });
+    const label = formatDate(tx.created_at);
     if (!map.has(label)) map.set(label, []);
     map.get(label)!.push(tx);
   }
   return Array.from(map.entries()).map(([label, items]) => ({ label, items }));
 }
 
-function TxItem({ tx }: { tx: Transaction }) {
-  const isExpense = tx.type === "expense";
-  const tag = CAT_SHORT[tx.category] ?? tx.category.slice(0, 3).toUpperCase();
-  const time = new Date(tx.created_at).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
-
-  return (
-    <div
-      className="flex items-center gap-3 py-3 border-b last:border-0"
-      style={{ borderColor: "var(--border)" }}
-    >
-      {/* Category tag */}
-      <div
-        className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 mono"
-        style={{
-          background: "var(--surface-2)",
-          border: "1px solid var(--border)",
-          fontSize: "0.6rem",
-          fontWeight: 700,
-          letterSpacing: "0.05em",
-          color: "var(--text-muted)",
-        }}
-      >
-        {tag}
-      </div>
-
-      {/* Info */}
-      <div className="flex-1 min-w-0">
-        <p className="text-sm font-semibold truncate" style={{ color: "var(--text)" }}>
-          {tx.category}
-        </p>
-        <p className="text-xs truncate" style={{ color: "var(--text-muted)" }}>
-          {tx.note || "—"} · {time}
-        </p>
-      </div>
-
-      {/* Amount */}
-      <p
-        className="text-sm font-bold shrink-0 mono"
-        style={{ color: isExpense ? "var(--expense)" : "var(--income)" }}
-      >
-        {isExpense ? "–" : "+"}Rp {fmtShort(tx.amount)}
-      </p>
-    </div>
-  );
-}
-
-export default function TransactionList({
-  transactions,
-  grouped = false,
-}: {
+export default function TransactionList({ transactions, grouped = false }: {
   transactions: Transaction[];
   grouped?: boolean;
 }) {
-  if (transactions.length === 0) {
+  if (!transactions.length) {
     return (
-      <div className="py-10 flex flex-col items-center gap-2">
-        <p className="text-2xl font-bold" style={{ color: "var(--text-dim)" }}>—</p>
-        <p className="text-sm" style={{ color: "var(--text-muted)" }}>Belum ada transaksi</p>
+      <div style={{ padding: "40px 0", textAlign: "center" }}>
+        <p style={{ fontSize: 24, color: "var(--text-3)", marginBottom: 8 }}>—</p>
+        <p style={{ fontSize: 11, letterSpacing: "0.15em", color: "var(--text-2)", textTransform: "uppercase" }}>
+          Belum ada transaksi
+        </p>
       </div>
     );
   }
 
   if (!grouped) {
-    return <>{transactions.map(tx => <TxItem key={tx.id} tx={tx} />)}</>;
+    return <div>{transactions.map(tx => <TxRow key={tx.id} tx={tx} />)}</div>;
   }
 
   const groups = groupByDate(transactions);
   return (
-    <>
+    <div>
       {groups.map(g => (
         <div key={g.label}>
-          <p
-            className="text-xs font-bold py-2 sticky top-0 uppercase tracking-widest"
-            style={{
-              color: "var(--text-muted)",
-              background: "var(--surface)",
-              letterSpacing: "0.08em",
-              fontSize: "0.6rem",
-            }}
-          >
+          <p style={{
+            fontSize: 9, letterSpacing: "0.2em", color: "var(--text-2)", textTransform: "uppercase",
+            padding: "10px 0 6px", fontWeight: 700, background: "var(--surface)",
+            position: "sticky", top: 0,
+          }}>
             {g.label}
           </p>
-          {g.items.map(tx => <TxItem key={tx.id} tx={tx} />)}
+          {g.items.map(tx => <TxRow key={tx.id} tx={tx} />)}
         </div>
       ))}
-    </>
+    </div>
   );
 }

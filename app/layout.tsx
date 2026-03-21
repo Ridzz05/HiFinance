@@ -5,19 +5,22 @@ import BottomNav from "@/components/BottomNav";
 
 export const metadata: Metadata = {
   title: "HiFinance",
-  description: "Dashboard keuangan pribadi Telegram Mini App",
-  viewport: "width=device-width, initial-scale=1, viewport-fit=cover",
+  description: "Pantau keuangan via Telegram",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="id">
+    <html lang="id" suppressHydrationWarning>
       <head>
-        <meta name="theme-color" content="#7c5cfc" />
         <script src="https://telegram.org/js/telegram-web-app.js" async />
+        {/* Prevent theme flash */}
+        <script dangerouslySetInnerHTML={{ __html: `
+          (function(){var t=localStorage.getItem('hf-theme')||'dark';
+          document.documentElement.setAttribute('data-theme',t);})()
+        `}} />
       </head>
       <body>
-        <div className="max-w-lg mx-auto min-h-screen" style={{ paddingBottom: "80px" }}>
+        <div className="max-w-sm mx-auto min-h-screen pb-20">
           {children}
         </div>
         <BottomNav />

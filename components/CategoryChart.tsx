@@ -1,56 +1,31 @@
 "use client";
-// components/CategoryChart.tsx — Nihilism style
+// components/CategoryChart.tsx
 
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import { CategorySummary } from "@/lib/types";
 
-// Monochromatic greys/whites — Nihilism palette
-const PALETTE = [
-  "rgba(255,255,255,0.90)",
-  "rgba(255,255,255,0.55)",
-  "rgba(255,255,255,0.35)",
-  "rgba(255,255,255,0.20)",
-  "rgba(255,255,255,0.12)",
-  "rgba(255,255,255,0.70)",
-  "rgba(255,255,255,0.45)",
-  "rgba(255,255,255,0.25)",
-];
+const DARK  = ["#ffffff", "#aaaaaa", "#666666", "#444444", "#222222", "#181818"];
+const LIGHT = ["#000000", "#555555", "#888888", "#aaaaaa", "#cccccc", "#e0e0e0"];
 
-// For light mode — inverted
-const PALETTE_LIGHT = [
-  "rgba(0,0,0,0.85)",
-  "rgba(0,0,0,0.55)",
-  "rgba(0,0,0,0.35)",
-  "rgba(0,0,0,0.20)",
-  "rgba(0,0,0,0.12)",
-  "rgba(0,0,0,0.65)",
-  "rgba(0,0,0,0.42)",
-  "rgba(0,0,0,0.24)",
-];
-
-function fmt(n: number) {
+const fmtShort = (n: number) => {
   if (n >= 1_000_000) return `Rp ${(n / 1_000_000).toFixed(1)}jt`;
   if (n >= 1_000) return `Rp ${(n / 1_000).toFixed(0)}rb`;
   return `Rp ${n}`;
+};
+
+function getColors() {
+  if (typeof document === "undefined") return DARK;
+  return document.documentElement.getAttribute("data-theme") === "light" ? LIGHT : DARK;
 }
 
 export default function CategoryChart({ data }: { data: CategorySummary[] }) {
-  // Detect theme
-  const isLight = typeof document !== "undefined" &&
-    document.documentElement.getAttribute("data-theme") === "light";
-  const palette = isLight ? PALETTE_LIGHT : PALETTE;
+  const colors = getColors();
 
-  if (data.length === 0) {
+  if (!data.length) {
     return (
-      <div className="flex flex-col items-center py-8">
-        <div
-          className="w-16 h-16 rounded-full flex items-center justify-center mb-3 text-2xl font-bold"
-          style={{ background: "var(--surface-2)", border: "1px solid var(--border)", color: "var(--text-dim)" }}
-        >
-          —
-        </div>
-        <p className="text-sm font-medium" style={{ color: "var(--text-muted)" }}>
-          Belum ada pengeluaran
+      <div style={{ padding: "32px 0", textAlign: "center" }}>
+        <p style={{ fontSize: 10, letterSpacing: "0.2em", color: "var(--text-2)", textTransform: "uppercase" }}>
+          Tidak ada data
         </p>
       </div>
     );
@@ -58,53 +33,37 @@ export default function CategoryChart({ data }: { data: CategorySummary[] }) {
 
   return (
     <div>
-      <ResponsiveContainer width="100%" height={185}>
+      <ResponsiveContainer width="100%" height={160}>
         <PieChart>
-          <Pie
-            data={data}
-            cx="50%" cy="50%"
-            innerRadius={54} outerRadius={80}
-            paddingAngle={2}
-            dataKey="amount"
-            startAngle={90} endAngle={-270}
-            strokeWidth={0}
-          >
-            {data.map((_, i) => (
-              <Cell key={i} fill={palette[i % palette.length]} />
-            ))}
+          <Pie data={data} cx="50%" cy="50%" innerRadius={46} outerRadius={72}
+            paddingAngle={2} dataKey="amount" strokeWidth={0}>
+            {data.map((_, i) => <Cell key={i} fill={colors[i % colors.length]} />)}
           </Pie>
           <Tooltip
-            formatter={(v: number) => [fmt(v), ""]}
+            formatter={(v) => [fmtShort(Number(v)), ""]}
             contentStyle={{
               background: "var(--tooltip-bg)",
-              border: "1px solid var(--border-mid)",
+              border: "1px solid var(--border-hi)",
               borderRadius: 10,
+              fontSize: 11,
               color: "var(--text)",
-              fontSize: 12,
-              fontFamily: "Space Grotesk",
-              padding: "8px 12px",
-              boxShadow: "var(--shadow-md)",
             }}
-            itemStyle={{ color: "var(--text)" }}
+            itemStyle={{ color: "var(--text-2)" }}
+            labelStyle={{ color: "var(--text)", fontWeight: 600 }}
           />
         </PieChart>
       </ResponsiveContainer>
 
       {/* Legend */}
-      <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px 16px", marginTop: 12 }}>
         {data.map((item, i) => (
-          <div key={item.category} className="flex items-center gap-2">
-            <span
-              className="w-2 h-2 rounded-full shrink-0"
-              style={{ background: palette[i % palette.length] }}
-            />
-            <div className="min-w-0">
-              <p className="text-xs font-medium truncate" style={{ color: "var(--text)" }}>
+          <div key={item.category} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <span style={{ width: 8, height: 8, borderRadius: 2, background: colors[i % colors.length], flexShrink: 0 }} />
+            <div style={{ minWidth: 0 }}>
+              <p style={{ fontSize: 10, letterSpacing: "0.15em", color: "var(--text-2)", textTransform: "uppercase", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                 {item.category}
               </p>
-              <p className="text-xs mono" style={{ color: "var(--text-muted)" }}>
-                {item.percentage}%
-              </p>
+              <p style={{ fontSize: 11, fontWeight: 600, color: "var(--text)" }}>{item.percentage}%</p>
             </div>
           </div>
         ))}

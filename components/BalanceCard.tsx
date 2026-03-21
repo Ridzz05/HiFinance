@@ -1,85 +1,64 @@
 "use client";
-// components/BalanceCard.tsx — Nihilism style
+// components/BalanceCard.tsx
 
 import { MonthlySummary } from "@/lib/types";
 
-function fmtFull(n: number) {
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency", currency: "IDR", minimumFractionDigits: 0,
-  }).format(n);
-}
+const fmt = (n: number) =>
+  new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(n);
 
-function fmtShort(n: number) {
-  const a = Math.abs(n);
-  if (a >= 1_000_000_000) return `${(n/1_000_000_000).toFixed(2)}B`;
-  if (a >= 1_000_000) return `${(n/1_000_000).toFixed(2)}jt`;
-  if (a >= 1_000) return `${(n/1_000).toFixed(0)}rb`;
-  return n.toLocaleString("id-ID");
-}
+const fmtShort = (n: number) => {
+  if (n >= 1_000_000) return `Rp ${(n / 1_000_000).toFixed(1)}jt`;
+  if (n >= 1_000) return `Rp ${(n / 1_000).toFixed(0)}rb`;
+  return `Rp ${n}`;
+};
 
 export default function BalanceCard({ summary }: { summary: MonthlySummary }) {
-  const positive = summary.balance >= 0;
-
   return (
     <div
-      className="rounded-2xl p-5 animate-fade-up"
       style={{
-        background: "var(--card-gradient)",
-        border: "1px solid var(--border-mid)",
-        boxShadow: "var(--shadow-md)",
+        background: "var(--surface)",
+        border: "1px solid var(--border-hi)",
+        borderRadius: 20,
+        padding: "24px 20px",
       }}
     >
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <span className="text-xs font-medium uppercase tracking-widest" style={{ color: "var(--text-muted)" }}>
-          {summary.period.label}
-        </span>
-        <span
-          className="text-xs font-semibold px-2 py-0.5 rounded-full mono"
-          style={{
-            background: positive ? "rgba(255,255,255,0.06)" : "rgba(255,255,255,0.04)",
-            color: positive ? "var(--text)" : "var(--text-muted)",
-            border: "1px solid var(--border)",
-          }}
-        >
-          {positive ? "+" : "–"}{fmtShort(Math.abs(summary.balance))}
-        </span>
-      </div>
+      {/* Period */}
+      <p style={{ fontSize: 10, letterSpacing: "0.2em", color: "var(--text-2)", textTransform: "uppercase", marginBottom: 16 }}>
+        {summary.period.label}
+      </p>
 
-      {/* Main balance */}
-      <div className="mb-6">
-        <p className="text-xs font-medium mb-1" style={{ color: "var(--text-muted)" }}>Saldo</p>
-        <p
-          className="text-4xl font-bold mono leading-none tracking-tight"
-          style={{ color: positive ? "var(--text)" : "var(--text-muted)" }}
-        >
-          {fmtFull(summary.balance)}
-        </p>
-      </div>
+      {/* Big balance */}
+      <p style={{ fontSize: 11, letterSpacing: "0.15em", color: "var(--text-2)", textTransform: "uppercase", marginBottom: 6 }}>
+        Saldo
+      </p>
+      <p style={{ fontSize: 36, fontWeight: 700, letterSpacing: "-0.02em", color: "var(--text)", marginBottom: 24, lineHeight: 1 }}>
+        {fmt(summary.balance)}
+      </p>
 
       {/* Divider */}
-      <div className="mb-4" style={{ height: "1px", background: "var(--border)" }} />
+      <div style={{ height: 1, background: "var(--border)", marginBottom: 20 }} />
 
-      {/* Stats */}
-      <div className="grid grid-cols-2 gap-4">
+      {/* Income / Expense — two equal columns */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+        {/* Income */}
         <div>
-          <p className="text-xs mb-1" style={{ color: "var(--text-muted)" }}>Pendapatan</p>
-          <p className="text-base font-semibold mono" style={{ color: "var(--income)" }}>
+          <p style={{ fontSize: 9, letterSpacing: "0.2em", color: "var(--text-2)", textTransform: "uppercase", marginBottom: 6 }}>
+            Pemasukan
+          </p>
+          <p style={{ fontSize: 15, fontWeight: 600, color: "var(--income)", letterSpacing: "-0.01em" }}>
             +{fmtShort(summary.total_income)}
           </p>
         </div>
-        <div className="text-right">
-          <p className="text-xs mb-1" style={{ color: "var(--text-muted)" }}>Pengeluaran</p>
-          <p className="text-base font-semibold mono" style={{ color: "var(--expense)" }}>
-            –{fmtShort(summary.total_expense)}
+        {/* Expense */}
+        <div>
+          <p style={{ fontSize: 9, letterSpacing: "0.2em", color: "var(--text-2)", textTransform: "uppercase", marginBottom: 6 }}>
+            Pengeluaran
+          </p>
+          <p style={{ fontSize: 15, fontWeight: 600, color: "var(--expense)", letterSpacing: "-0.01em" }}>
+            -{fmtShort(summary.total_expense)}
           </p>
         </div>
       </div>
-
-      {/* Footer */}
-      <p className="text-xs mt-4" style={{ color: "var(--text-dim)" }}>
-        {summary.transaction_count} transaksi
-      </p>
     </div>
   );
 }

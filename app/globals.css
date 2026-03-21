@@ -1,135 +1,75 @@
 @import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap");
 @import "tailwindcss";
 
-/* ─────────────────────────────────────────────────
-   NIHILISM DESIGN SYSTEM
-   Three modes: dark (default) · light · night
-   ───────────────────────────────────────────────── */
-
-/* Dark — pure black, default */
-:root,
-[data-theme="dark"] {
-  --bg:             #000000;
-  --surface:        #0a0a0a;
-  --surface-2:      #111111;
-  --border:         rgba(255, 255, 255, 0.05);
-  --border-mid:     rgba(255, 255, 255, 0.09);
-  --text:           #ffffff;
-  --text-muted:     #555555;
-  --text-dim:       #222222;
-  --income:         #ffffff;
-  --expense:        #666666;
-  --card-gradient:  linear-gradient(135deg, #111111 0%, #191919 100%);
-  --btn-bg:         rgba(255, 255, 255, 0.06);
-  --btn-hover:      rgba(255, 255, 255, 0.10);
-  --skeleton:       rgba(255, 255, 255, 0.04);
-  --tooltip-bg:     #0f0f0f;
-  --shadow:         0 1px 3px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04);
-  --shadow-md:      0 4px 20px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04);
+/* ── Dark (default) ── */
+:root, [data-theme="dark"] {
+  --bg:          #000000;
+  --surface:     #0c0c0c;
+  --border:      rgba(255,255,255,0.06);
+  --border-hi:   rgba(255,255,255,0.10);
+  --text:        #ffffff;
+  --text-2:      #888888;
+  --text-3:      #333333;
+  --income:      #ffffff;
+  --expense:     #555555;
+  --pill-active-bg:   #ffffff;
+  --pill-active-text: #000000;
+  --pill-bg:          #0c0c0c;
+  --pill-text:        #888888;
+  --skeleton:    rgba(255,255,255,0.05);
+  --tooltip-bg:  #111111;
 }
 
-/* Light — clean white */
+/* ── Light ── */
 [data-theme="light"] {
-  --bg:             #f4f4f4;
-  --surface:        #ffffff;
-  --surface-2:      #fafafa;
-  --border:         rgba(0, 0, 0, 0.07);
-  --border-mid:     rgba(0, 0, 0, 0.11);
-  --text:           #0a0a0a;
-  --text-muted:     #888888;
-  --text-dim:       #dddddd;
-  --income:         #0a0a0a;
-  --expense:        #999999;
-  --card-gradient:  linear-gradient(135deg, #ffffff 0%, #f7f7f7 100%);
-  --btn-bg:         rgba(0, 0, 0, 0.05);
-  --btn-hover:      rgba(0, 0, 0, 0.09);
-  --skeleton:       rgba(0, 0, 0, 0.06);
-  --tooltip-bg:     #ffffff;
-  --shadow:         0 1px 3px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.05);
-  --shadow-md:      0 4px 20px rgba(0,0,0,0.10), 0 0 0 1px rgba(0,0,0,0.05);
-}
-
-/* Night — deep navy, easier on eyes */
-[data-theme="night"] {
-  --bg:             #060d1a;
-  --surface:        #0d1525;
-  --surface-2:      #111e33;
-  --border:         rgba(148, 163, 184, 0.07);
-  --border-mid:     rgba(148, 163, 184, 0.12);
-  --text:           #dde4f0;
-  --text-muted:     #4a5a70;
-  --text-dim:       #1a2540;
-  --income:         #dde4f0;
-  --expense:        #334155;
-  --card-gradient:  linear-gradient(135deg, #0d1525 0%, #111e33 100%);
-  --btn-bg:         rgba(148, 163, 184, 0.07);
-  --btn-hover:      rgba(148, 163, 184, 0.12);
-  --skeleton:       rgba(148, 163, 184, 0.05);
-  --tooltip-bg:     #0d1525;
-  --shadow:         0 1px 4px rgba(0,0,0,0.5), 0 0 0 1px rgba(148,163,184,0.06);
-  --shadow-md:      0 6px 28px rgba(0,0,0,0.5), 0 0 0 1px rgba(148,163,184,0.06);
+  --bg:          #f7f7f7;
+  --surface:     #ffffff;
+  --border:      rgba(0,0,0,0.07);
+  --border-hi:   rgba(0,0,0,0.12);
+  --text:        #000000;
+  --text-2:      #777777;
+  --text-3:      #cccccc;
+  --income:      #000000;
+  --expense:     #aaaaaa;
+  --pill-active-bg:   #000000;
+  --pill-active-text: #ffffff;
+  --pill-bg:          #ffffff;
+  --pill-text:        #777777;
+  --skeleton:    rgba(0,0,0,0.06);
+  --tooltip-bg:  #ffffff;
 }
 
 /* ── Base ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-html {
-  height: 100%;
-  padding-top: env(safe-area-inset-top);
-}
-
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: "Space Grotesk", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: "Space Grotesk", sans-serif;
   -webkit-font-smoothing: antialiased;
   overscroll-behavior: none;
-  min-height: 100%;
-  padding-bottom: env(safe-area-inset-bottom);
-  transition: background 0.2s ease, color 0.2s ease;
+  transition: background 0.15s, color 0.15s;
 }
+::-webkit-scrollbar { width: 0; }
+::selection { background: var(--text); color: var(--bg); }
+* { -webkit-tap-highlight-color: transparent; }
 
-/* ── Animations ── */
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(10px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
+/* ── Skeleton shimmer ── */
 @keyframes shimmer {
   0%   { background-position: -200% 0; }
   100% { background-position:  200% 0; }
 }
-
-.animate-fade-up   { animation: fadeUp 0.25s ease both; }
-.animate-fade-up-1 { animation: fadeUp 0.25s ease 0.06s both; }
-.animate-fade-up-2 { animation: fadeUp 0.25s ease 0.12s both; }
-.animate-fade-up-3 { animation: fadeUp 0.25s ease 0.18s both; }
-
-/* ── Skeleton ── */
 .skeleton {
-  background: linear-gradient(
-    90deg,
-    var(--skeleton) 25%,
-    rgba(255,255,255,0.02) 50%,
-    var(--skeleton) 75%
-  );
+  background: linear-gradient(90deg, var(--skeleton) 25%, rgba(128,128,128,0.04) 50%, var(--skeleton) 75%);
   background-size: 200% 100%;
-  animation: shimmer 1.4s infinite;
-  border-radius: 10px;
+  animation: shimmer 1.5s infinite;
 }
 
-/* ── Card ── */
-.card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  box-shadow: var(--shadow);
-  transition: background 0.2s ease, border-color 0.2s ease;
+/* ── Fade-up animations ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
-
-/* ── Mono number ── */
-.mono { font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
-
-/* ── Misc ── */
-::-webkit-scrollbar { width: 0; }
-* { -webkit-tap-highlight-color: transparent; }
-::selection { background: var(--text); color: var(--bg); }
+.fade-0 { animation: fadeUp .2s ease both; }
+.fade-1 { animation: fadeUp .2s ease .07s both; }
+.fade-2 { animation: fadeUp .2s ease .14s both; }
+.fade-3 { animation: fadeUp .2s ease .21s both; }

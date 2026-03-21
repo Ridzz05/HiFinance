@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import BalanceCard from "@/components/BalanceCard";
 import CategoryChart from "@/components/CategoryChart";
 import TransactionList from "@/components/TransactionList";
+import ThemeToggle from "@/components/ThemeToggle";
 import { MonthlySummary, Transaction } from "@/lib/types";
 
 declare global {
@@ -13,102 +14,90 @@ declare global {
   }
 }
 
+function SkeletonBox({ h }: { h: number }) {
+  return <div className="skeleton" style={{ height: h, borderRadius: 16 }} />;
+}
+
 export default function DashboardPage() {
-  const [summary, setSummary] = useState<MonthlySummary | null>(null);
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [summary, setSummary]     = useState<MonthlySummary | null>(null);
+  const [transactions, setTx]     = useState<Transaction[]>([]);
+  const [loading, setLoading]     = useState(true);
+  const [error, setError]         = useState<string | null>(null);
 
   useEffect(() => {
     const tg = window.Telegram?.WebApp;
-    tg?.ready?.();
-    tg?.expand?.();
+    tg?.ready?.(); tg?.expand?.();
     const initData = tg?.initData;
-
-    if (!initData) {
-      setError("Buka melalui bot Telegram.");
-      setLoading(false);
-      return;
-    }
+    if (!initData) { setError("Buka melalui bot Telegram."); setLoading(false); return; }
 
     (async () => {
       try {
         const [sRes, tRes] = await Promise.all([
-          fetch("/api/summary", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ initData }) }),
+          fetch("/api/summary",      { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ initData }) }),
           fetch("/api/transactions", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ initData, limit: 5 }) }),
         ]);
         if (!sRes.ok) throw new Error();
         const [s, t] = await Promise.all([sRes.json(), tRes.json()]);
-        setSummary(s);
-        setTransactions(t);
-      } catch {
-        setError("Gagal memuat data.");
-      } finally {
-        setLoading(false);
-      }
+        setSummary(s); setTx(t);
+      } catch { setError("Gagal memuat data."); }
+      finally { setLoading(false); }
     })();
   }, []);
 
-  if (error) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-2">
-        <p className="text-3xl font-bold" style={{ color: "var(--text-dim)" }}>—</p>
-        <p className="text-xs tracking-widest uppercase" style={{ color: "var(--text-muted)" }}>{error}</p>
-      </div>
-    );
-  }
+  /* ── Error state ── */
+  if (error) return (
+    <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 8, padding: 24 }}>
+      <p style={{ fontSize: 32, color: "var(--text-3)" }}>—</p>
+      <p style={{ fontSize: 11, letterSpacing: "0.15em", color: "var(--text-2)", textTransform: "uppercase" }}>{error}</p>
+    </div>
+  );
 
   return (
-    <div className="px-4 pt-6 pb-4 space-y-5">
+    <div style={{ padding: "20px 16px 0", display: "flex", flexDirection: "column", gap: 20 }}>
 
-      {/* Header */}
-      <div className="animate-fade-up">
-        <p className="text-[9px] tracking-[0.3em] uppercase mb-1" style={{ color: "var(--text-muted)" }}>
-          Financial Tracker
-        </p>
-        <h1 className="text-2xl font-bold tracking-tight" style={{ color: "var(--text)" }}>
-          HiFinance
-        </h1>
+      {/* ── Header ── */}
+      <div className="fade-0" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <div>
+          <p style={{ fontSize: 9, letterSpacing: "0.3em", color: "var(--text-2)", textTransform: "uppercase", marginBottom: 4 }}>
+            HiFinance
+          </p>
+          <h1 style={{ fontSize: 22, fontWeight: 700, color: "var(--text)", letterSpacing: "-0.01em", lineHeight: 1 }}>
+            Overview
+          </h1>
+        </div>
+        <ThemeToggle />
       </div>
 
-      {/* Balance Card */}
-      <div className="animate-fade-up-1">
-        {loading
-          ? <div className="skeleton rounded-2xl h-44" />
-          : summary && <BalanceCard summary={summary} />
-        }
+      {/* ── Balance Card ── */}
+      <div className="fade-1">
+        {loading ? <SkeletonBox h={176} /> : summary && <BalanceCard summary={summary} />}
       </div>
 
-      {/* Chart */}
-      <div className="animate-fade-up-2">
-        <p className="text-[9px] tracking-[0.3em] uppercase mb-3" style={{ color: "var(--text-muted)" }}>
-          Pengeluaran per Kategori
+      {/* ── Category Chart ── */}
+      <div className="fade-2">
+        <p style={{ fontSize: 9, letterSpacing: "0.25em", color: "var(--text-2)", textTransform: "uppercase", marginBottom: 12 }}>
+          Pengeluaran
         </p>
-        <div className="card p-4">
-          {loading
-            ? <div className="skeleton rounded-xl h-48" />
-            : summary && <CategoryChart data={summary.expense_by_category} />
-          }
+        <div style={{ background: "var(--surface)", border: "1px solid var(--border-hi)", borderRadius: 20, padding: "16px 16px 12px" }}>
+          {loading ? <SkeletonBox h={180} /> : summary && <CategoryChart data={summary.expense_by_category} />}
         </div>
       </div>
 
-      {/* Recent Transactions */}
-      <div className="animate-fade-up-3">
-        <div className="flex items-center justify-between mb-3">
-          <p className="text-[9px] tracking-[0.3em] uppercase" style={{ color: "var(--text-muted)" }}>
+      {/* ── Recent Transactions ── */}
+      <div className="fade-3">
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+          <p style={{ fontSize: 9, letterSpacing: "0.25em", color: "var(--text-2)", textTransform: "uppercase" }}>
             Terbaru
           </p>
-          <a
-            href="/transactions"
-            className="text-[9px] tracking-widest uppercase transition-opacity hover:opacity-60"
-            style={{ color: "var(--text-muted)" }}
-          >
-            Lihat semua →
+          <a href="/transactions" style={{ fontSize: 9, letterSpacing: "0.15em", color: "var(--text-2)", textTransform: "uppercase", textDecoration: "none" }}>
+            Semua →
           </a>
         </div>
-        <div className="card p-4">
+        <div style={{ background: "var(--surface)", border: "1px solid var(--border-hi)", borderRadius: 20, padding: "0 16px" }}>
           {loading
-            ? <div className="space-y-3">{[0,1,2].map(i => <div key={i} className="skeleton h-12 rounded-xl" />)}</div>
+            ? <div style={{ padding: "16px 0", display: "flex", flexDirection: "column", gap: 8 }}>
+                {[0,1,2].map(i => <SkeletonBox key={i} h={48} />)}
+              </div>
             : <TransactionList transactions={transactions} />
           }
         </div>

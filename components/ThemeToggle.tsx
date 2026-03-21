@@ -1,52 +1,51 @@
 "use client";
-// components/ThemeToggle.tsx
-// Dark / Light / Night theme switcher — persists in localStorage
+// components/ThemeToggle.tsx — compact toggle, dark ↔ light
 
 import { useEffect, useState } from "react";
 
-type Theme = "dark" | "light" | "night";
-
-const THEMES: { key: Theme; label: string; symbol: string }[] = [
-  { key: "dark",  label: "Dark",  symbol: "●" },
-  { key: "night", label: "Night", symbol: "◐" },
-  { key: "light", label: "Light", symbol: "○" },
-];
-
 export default function ThemeToggle() {
-  const [theme, setTheme] = useState<Theme>("dark");
+  const [dark, setDark] = useState(true);
 
-  // Load from localStorage on mount
   useEffect(() => {
-    const saved = localStorage.getItem("hf-theme") as Theme | null;
-    if (saved) apply(saved);
+    const saved = localStorage.getItem("hf-theme");
+    const isDark = saved !== "light";
+    setDark(isDark);
   }, []);
 
-  function apply(t: Theme) {
-    document.documentElement.setAttribute("data-theme", t);
-    localStorage.setItem("hf-theme", t);
-    setTheme(t);
+  function toggle() {
+    const next = dark ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", next);
+    localStorage.setItem("hf-theme", next);
+    setDark(!dark);
   }
-
-  function cycle() {
-    const idx = THEMES.findIndex(t => t.key === theme);
-    apply(THEMES[(idx + 1) % THEMES.length].key);
-  }
-
-  const current = THEMES.find(t => t.key === theme)!;
 
   return (
     <button
-      onClick={cycle}
-      title={`Theme: ${current.label}`}
-      className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-medium transition-all active:scale-95"
+      onClick={toggle}
+      aria-label="Toggle theme"
       style={{
-        background: "var(--btn-bg)",
-        color: "var(--text-muted)",
-        border: "1px solid var(--border)",
+        width: 36,
+        height: 20,
+        borderRadius: 10,
+        background: dark ? "#222" : "#ddd",
+        border: "1px solid var(--border-hi)",
+        position: "relative",
+        transition: "background 0.2s",
+        flexShrink: 0,
       }}
     >
-      <span className="text-sm leading-none">{current.symbol}</span>
-      <span>{current.label}</span>
+      <span
+        style={{
+          position: "absolute",
+          top: 2,
+          left: dark ? 18 : 2,
+          width: 14,
+          height: 14,
+          borderRadius: "50%",
+          background: dark ? "#fff" : "#000",
+          transition: "left 0.2s, background 0.2s",
+        }}
+      />
     </button>
   );
 }
