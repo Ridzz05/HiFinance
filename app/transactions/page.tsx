@@ -5,12 +5,6 @@ import { useEffect, useState } from "react";
 import TransactionList from "@/components/TransactionList";
 import { Transaction } from "@/lib/types";
 
-declare global {
-  interface Window {
-    Telegram?: { WebApp?: { initData?: string } };
-  }
-}
-
 export default function TransactionsPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
