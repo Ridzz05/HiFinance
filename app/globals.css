@@ -1,20 +1,48 @@
 @import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap");
 @import "tailwindcss";
 
-:root {
+/* ── Dark theme (default) ── */
+:root,
+[data-theme="dark"] {
   --bg: #000000;
-  --surface: #0f0f0f;
-  --surface-2: #141414;
-  --border: #222222;
-  --border-soft: #1a1a1a;
+  --surface: #0a0a0a;
+  --surface-2: #111111;
+  --border: rgba(255, 255, 255, 0.05);
+  --border-mid: rgba(255, 255, 255, 0.08);
   --text: #ffffff;
   --text-muted: #555555;
-  --text-dim: #333333;
+  --text-dim: #2a2a2a;
+  --income: #ffffff;
+  --expense: #444444;
+  --avatar-bg: #111111;
+  --avatar-border: #1f1f1f;
+  --avatar-text: #444444;
+  --skeleton: rgba(255, 255, 255, 0.04);
+  --tooltip-bg: #0f0f0f;
+  --tooltip-border: #222222;
 }
 
-* {
-  box-sizing: border-box;
+/* ── Light theme ── */
+[data-theme="light"] {
+  --bg: #f9f9f9;
+  --surface: #ffffff;
+  --surface-2: #f2f2f2;
+  --border: rgba(0, 0, 0, 0.06);
+  --border-mid: rgba(0, 0, 0, 0.09);
+  --text: #000000;
+  --text-muted: #888888;
+  --text-dim: #dddddd;
+  --income: #000000;
+  --expense: #aaaaaa;
+  --avatar-bg: #f0f0f0;
+  --avatar-border: #e0e0e0;
+  --avatar-text: #999999;
+  --skeleton: rgba(0, 0, 0, 0.06);
+  --tooltip-bg: #ffffff;
+  --tooltip-border: #e0e0e0;
 }
+
+* { box-sizing: border-box; }
 
 body {
   background: var(--bg);
@@ -22,11 +50,9 @@ body {
   font-family: "Space Grotesk", sans-serif;
   -webkit-font-smoothing: antialiased;
   overscroll-behavior: none;
+  transition: background 0.2s ease, color 0.2s ease;
 }
 
 ::-webkit-scrollbar { width: 0px; }
 
-::selection {
-  background: #fff;
-  color: #000;
-}
+::selection { background: var(--text); color: var(--bg); }

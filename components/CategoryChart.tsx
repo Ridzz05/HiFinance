@@ -3,9 +3,10 @@
 
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import { CategorySummary } from "@/lib/types";
+import { useTheme } from "./ThemeProvider";
 
-// Grayscale palette — darkest to lightest
-const GRAYS = ["#ffffff", "#aaaaaa", "#777777", "#555555", "#333333", "#222222", "#1a1a1a", "#111111"];
+const DARK_GRAYS = ["#ffffff", "#aaaaaa", "#777777", "#555555", "#333333", "#222222"];
+const LIGHT_GRAYS = ["#000000", "#444444", "#777777", "#999999", "#bbbbbb", "#dddddd"];
 
 function formatRupiah(amount: number): string {
   if (amount >= 1_000_000) return `Rp ${(amount / 1_000_000).toFixed(1)}jt`;
@@ -14,10 +15,15 @@ function formatRupiah(amount: number): string {
 }
 
 export default function CategoryChart({ data }: { data: CategorySummary[] }) {
+  const { theme } = useTheme();
+  const GRAYS = theme === "dark" ? DARK_GRAYS : LIGHT_GRAYS;
+
   if (data.length === 0) {
     return (
       <div className="flex items-center justify-center h-36">
-        <p className="text-[10px] tracking-[0.3em] text-neutral-700 uppercase">Tidak ada data</p>
+        <p style={{ color: "var(--text-muted)" }} className="text-[10px] tracking-[0.3em] uppercase">
+          Tidak ada data
+        </p>
       </div>
     );
   }
@@ -44,15 +50,15 @@ export default function CategoryChart({ data }: { data: CategorySummary[] }) {
           <Tooltip
             formatter={(value) => [formatRupiah(Number(value)), ""]}
             contentStyle={{
-              background: "#0f0f0f",
-              border: "1px solid #222",
+              background: "var(--tooltip-bg)",
+              border: "1px solid var(--tooltip-border)",
               borderRadius: "8px",
-              color: "#fff",
+              color: "var(--text)",
               fontSize: "11px",
               letterSpacing: "0.05em",
             }}
-            itemStyle={{ color: "#aaa" }}
-            labelStyle={{ color: "#fff", fontWeight: 600 }}
+            itemStyle={{ color: "var(--text-muted)" }}
+            labelStyle={{ color: "var(--text)", fontWeight: 600 }}
           />
         </PieChart>
       </ResponsiveContainer>
@@ -66,10 +72,10 @@ export default function CategoryChart({ data }: { data: CategorySummary[] }) {
               style={{ background: GRAYS[i % GRAYS.length] }}
             />
             <div className="min-w-0">
-              <p className="text-[10px] tracking-widest text-neutral-500 uppercase truncate">
+              <p style={{ color: "var(--text-muted)" }} className="text-[10px] tracking-widest uppercase truncate">
                 {item.category}
               </p>
-              <p className="text-[11px] font-semibold text-neutral-300">
+              <p style={{ color: "var(--text)" }} className="text-[11px] font-semibold">
                 {item.percentage}%
               </p>
             </div>

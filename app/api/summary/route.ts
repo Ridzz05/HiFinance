@@ -50,8 +50,6 @@ export async function POST(req: NextRequest) {
   const rows: TxRow[] = transactions ?? [];
   const totalIncome = rows.filter(t => t.type === "income").reduce((s, t) => s + t.amount, 0);
   const totalExpense = rows.filter(t => t.type === "expense").reduce((s, t) => s + t.amount, 0);
-
-  // Agregasi per kategori
   const categoryMap: Record<string, number> = {};
   rows.filter(t => t.type === "expense").forEach(t => {
     categoryMap[t.category] = (categoryMap[t.category] ?? 0) + t.amount;

@@ -2,6 +2,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import BottomNav from "@/components/BottomNav";
+import ThemeProvider from "@/components/ThemeProvider";
 
 export const metadata: Metadata = {
   title: "HiFinance",
@@ -14,11 +15,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <script src="https://telegram.org/js/telegram-web-app.js" async />
       </head>
-      <body className="bg-black text-white">
-        <div className="max-w-sm mx-auto min-h-screen pb-20">
-          {children}
-        </div>
-        <BottomNav />
+      <body>
+        <ThemeProvider>
+          <div className="max-w-sm mx-auto min-h-screen pb-20">
+            {children}
+          </div>
+          <BottomNav />
+        </ThemeProvider>
       </body>
     </html>
   );

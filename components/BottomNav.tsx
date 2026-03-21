@@ -37,7 +37,10 @@ export default function BottomNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-black border-t border-white/8 z-50">
+    <nav
+      className="fixed bottom-0 left-0 right-0 z-50"
+      style={{ background: "var(--bg)", borderTop: "1px solid var(--border-mid)" }}
+    >
       <div className="flex max-w-sm mx-auto">
         {NAV_ITEMS.map((item) => {
           const isActive = pathname === item.href;
@@ -45,18 +48,21 @@ export default function BottomNav() {
             <Link
               key={item.href}
               href={item.href}
-              className="flex-1 flex flex-col items-center gap-1.5 py-4 transition-colors"
-              style={{ color: isActive ? "#ffffff" : "#444444" }}
+              className="flex-1 flex flex-col items-center gap-1.5 py-4 transition-colors relative"
+              style={{ color: isActive ? "var(--text)" : "var(--text-muted)" }}
             >
               {item.icon}
               <span
                 className="text-[9px] font-medium tracking-widest uppercase"
-                style={{ color: isActive ? "#ffffff" : "#444444" }}
+                style={{ color: isActive ? "var(--text)" : "var(--text-muted)" }}
               >
                 {item.label}
               </span>
               {isActive && (
-                <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-6 h-[1px] bg-white" />
+                <span
+                  className="absolute bottom-0 left-1/2 -translate-x-1/2 w-6 h-px"
+                  style={{ background: "var(--text)" }}
+                />
               )}
             </Link>
           );

@@ -28,21 +28,18 @@ export default function TransactionsPage() {
     <div className="px-4 pt-6">
       {/* Header */}
       <div className="mb-6">
-        <p className="text-[9px] tracking-[0.35em] text-neutral-600 uppercase mb-1">
+        <p className="text-[9px] tracking-[0.35em] uppercase mb-1" style={{ color: "var(--text-muted)" }}>
           Riwayat
         </p>
-        <h1 className="text-2xl font-bold tracking-tight text-white">Transaksi</h1>
+        <h1 className="text-2xl font-bold tracking-tight" style={{ color: "var(--text)" }}>Transaksi</h1>
       </div>
 
       {/* List */}
-      <div className="border border-white/5 rounded-2xl px-4 bg-[#0a0a0a]">
+      <div className="rounded-2xl px-4" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
         {loading ? (
-          <div className="space-y-0 py-2">
+          <div className="py-2 space-y-1">
             {[...Array(8)].map((_, i) => (
-              <div
-                key={i}
-                className="h-14 animate-pulse bg-white/3 rounded-lg my-1"
-              />
+              <div key={i} className="h-14 rounded-lg animate-pulse" style={{ background: "var(--skeleton)" }} />
             ))}
           </div>
         ) : (
@@ -50,9 +47,9 @@ export default function TransactionsPage() {
         )}
       </div>
 
-      {/* Count */}
       {!loading && transactions.length > 0 && (
-        <p className="text-center text-[10px] tracking-[0.25em] text-neutral-700 uppercase mt-6">
+        <p className="text-center text-[10px] tracking-[0.25em] uppercase mt-6"
+          style={{ color: "var(--text-muted)" }}>
           {transactions.length} transaksi
         </p>
       )}
