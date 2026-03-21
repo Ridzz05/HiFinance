@@ -1,14 +1,11 @@
 "use client";
 // components/CategoryChart.tsx
-// Donut chart pengeluaran per kategori menggunakan Recharts
 
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from "recharts";
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import { CategorySummary } from "@/lib/types";
 
-const COLORS = [
-  "#6366f1", "#8b5cf6", "#a78bfa", "#c4b5fd",
-  "#818cf8", "#4f46e5", "#7c3aed", "#5b21b6",
-];
+// Grayscale palette — darkest to lightest
+const GRAYS = ["#ffffff", "#aaaaaa", "#777777", "#555555", "#333333", "#222222", "#1a1a1a", "#111111"];
 
 function formatRupiah(amount: number): string {
   if (amount >= 1_000_000) return `Rp ${(amount / 1_000_000).toFixed(1)}jt`;
@@ -16,57 +13,64 @@ function formatRupiah(amount: number): string {
   return `Rp ${amount}`;
 }
 
-interface CategoryChartProps {
-  data: CategorySummary[];
-}
-
-export default function CategoryChart({ data }: CategoryChartProps) {
+export default function CategoryChart({ data }: { data: CategorySummary[] }) {
   if (data.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center h-40 text-slate-400">
-        <span className="text-3xl mb-2">📭</span>
-        <p className="text-sm">Belum ada pengeluaran bulan ini</p>
+      <div className="flex items-center justify-center h-36">
+        <p className="text-[10px] tracking-[0.3em] text-neutral-700 uppercase">Tidak ada data</p>
       </div>
     );
   }
 
   return (
     <div>
-      <ResponsiveContainer width="100%" height={220}>
+      <ResponsiveContainer width="100%" height={180}>
         <PieChart>
           <Pie
             data={data}
             cx="50%"
             cy="50%"
-            innerRadius={55}
-            outerRadius={85}
-            paddingAngle={3}
+            innerRadius={52}
+            outerRadius={78}
+            paddingAngle={2}
             dataKey="amount"
             nameKey="category"
+            strokeWidth={0}
           >
             {data.map((_, index) => (
-              <Cell key={index} fill={COLORS[index % COLORS.length]} />
+              <Cell key={index} fill={GRAYS[index % GRAYS.length]} />
             ))}
           </Pie>
           <Tooltip
-            formatter={(value) => [formatRupiah(Number(value)), "Jumlah"]}
-            contentStyle={{ borderRadius: "12px", border: "none", boxShadow: "0 4px 20px rgba(0,0,0,0.1)" }}
+            formatter={(value) => [formatRupiah(Number(value)), ""]}
+            contentStyle={{
+              background: "#0f0f0f",
+              border: "1px solid #222",
+              borderRadius: "8px",
+              color: "#fff",
+              fontSize: "11px",
+              letterSpacing: "0.05em",
+            }}
+            itemStyle={{ color: "#aaa" }}
+            labelStyle={{ color: "#fff", fontWeight: 600 }}
           />
         </PieChart>
       </ResponsiveContainer>
 
-      {/* Legend custom */}
-      <div className="grid grid-cols-2 gap-2 mt-2">
+      {/* Legend */}
+      <div className="grid grid-cols-2 gap-x-4 gap-y-2 mt-4">
         {data.map((item, i) => (
           <div key={item.category} className="flex items-center gap-2">
             <span
-              className="w-3 h-3 rounded-full flex-shrink-0"
-              style={{ backgroundColor: COLORS[i % COLORS.length] }}
+              className="w-2 h-2 rounded-sm shrink-0"
+              style={{ background: GRAYS[i % GRAYS.length] }}
             />
             <div className="min-w-0">
-              <p className="text-xs text-slate-600 truncate">{item.category}</p>
-              <p className="text-xs font-semibold text-slate-800">
-                {item.percentage}% · {formatRupiah(item.amount)}
+              <p className="text-[10px] tracking-widest text-neutral-500 uppercase truncate">
+                {item.category}
+              </p>
+              <p className="text-[11px] font-semibold text-neutral-300">
+                {item.percentage}%
               </p>
             </div>
           </div>

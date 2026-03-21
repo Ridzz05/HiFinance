@@ -1,5 +1,5 @@
 "use client";
-// app/transactions/page.tsx — Halaman semua transaksi
+// app/transactions/page.tsx
 
 import { useEffect, useState } from "react";
 import TransactionList from "@/components/TransactionList";
@@ -25,23 +25,37 @@ export default function TransactionsPage() {
   }, []);
 
   return (
-    <div className="p-4">
-      <div className="pt-2 pb-4">
-        <h1 className="text-xl font-bold text-slate-800">Semua Transaksi 📋</h1>
-        <p className="text-slate-400 text-sm">50 transaksi terbaru</p>
+    <div className="px-4 pt-6">
+      {/* Header */}
+      <div className="mb-6">
+        <p className="text-[9px] tracking-[0.35em] text-neutral-600 uppercase mb-1">
+          Riwayat
+        </p>
+        <h1 className="text-2xl font-bold tracking-tight text-white">Transaksi</h1>
       </div>
 
-      <div className="bg-white rounded-2xl p-4 shadow-sm">
+      {/* List */}
+      <div className="border border-white/5 rounded-2xl px-4 bg-[#0a0a0a]">
         {loading ? (
-          <div className="space-y-3">
-            {[...Array(6)].map((_, i) => (
-              <div key={i} className="animate-pulse bg-slate-200 rounded-xl h-12" />
+          <div className="space-y-0 py-2">
+            {[...Array(8)].map((_, i) => (
+              <div
+                key={i}
+                className="h-14 animate-pulse bg-white/3 rounded-lg my-1"
+              />
             ))}
           </div>
         ) : (
           <TransactionList transactions={transactions} />
         )}
       </div>
+
+      {/* Count */}
+      {!loading && transactions.length > 0 && (
+        <p className="text-center text-[10px] tracking-[0.25em] text-neutral-700 uppercase mt-6">
+          {transactions.length} transaksi
+        </p>
+      )}
     </div>
   );
 }

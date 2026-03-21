@@ -1,13 +1,7 @@
 "use client";
-// components/TransactionItem.tsx + TransactionList.tsx
+// components/TransactionList.tsx
 
 import { Transaction } from "@/lib/types";
-
-const CATEGORY_ICONS: Record<string, string> = {
-  Makanan: "🍜", Minuman: "☕", Transport: "🚗", Belanja: "🛍️",
-  Kesehatan: "💊", Hiburan: "🎬", Pendidikan: "📚", Tagihan: "⚡",
-  Gaji: "💼", Investasi: "📈", Lainnya: "📦",
-};
 
 function formatRupiah(amount: number): string {
   if (amount >= 1_000_000) return `Rp ${(amount / 1_000_000).toFixed(1)}jt`;
@@ -17,51 +11,69 @@ function formatRupiah(amount: number): string {
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString("id-ID", {
-    day: "numeric", month: "short", hour: "2-digit", minute: "2-digit",
+    day: "numeric",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
   });
+}
+
+function getCategoryInitial(category: string): string {
+  return category.slice(0, 2).toUpperCase();
 }
 
 function TransactionItem({ tx }: { tx: Transaction }) {
   const isExpense = tx.type === "expense";
-  const icon = CATEGORY_ICONS[tx.category] ?? "💰";
 
   return (
-    <div className="flex items-center gap-3 py-3 border-b border-slate-100 last:border-0">
-      {/* Icon kategori */}
-      <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-lg flex-shrink-0">
-        {icon}
+    <div className="flex items-center gap-4 py-3.5 border-b border-white/5 last:border-0">
+      {/* Monochrome initial avatar */}
+      <div
+        className="w-9 h-9 rounded-lg flex items-center justify-center text-[10px] font-bold tracking-wider shrink-0"
+        style={{
+          background: isExpense ? "#111" : "#1a1a1a",
+          color: isExpense ? "#444" : "#888",
+          border: "1px solid #1f1f1f",
+        }}
+      >
+        {getCategoryInitial(tx.category)}
       </div>
 
       {/* Detail */}
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-slate-800 truncate">{tx.category}</p>
+        <p className="text-[11px] font-semibold tracking-widest text-neutral-300 uppercase truncate">
+          {tx.category}
+        </p>
         {tx.note && (
-          <p className="text-xs text-slate-400 truncate">{tx.note}</p>
+          <p className="text-[11px] text-neutral-600 truncate mt-0.5">{tx.note}</p>
         )}
-        <p className="text-xs text-slate-400">{formatDate(tx.created_at)}</p>
+        <p className="text-[10px] text-neutral-700 mt-0.5">{formatDate(tx.created_at)}</p>
       </div>
 
-      {/* Nominal */}
-      <p className={`text-sm font-bold flex-shrink-0 ${isExpense ? "text-rose-500" : "text-emerald-500"}`}>
-        {isExpense ? "-" : "+"}{formatRupiah(tx.amount)}
+      {/* Amount */}
+      <p
+        className="text-sm font-bold shrink-0 tabular-nums"
+        style={{ color: isExpense ? "#444444" : "#ffffff" }}
+      >
+        {isExpense ? "−" : "+"}{formatRupiah(tx.amount)}
       </p>
     </div>
   );
 }
 
-interface TransactionListProps {
+export default function TransactionList({
+  transactions,
+  limit,
+}: {
   transactions: Transaction[];
   limit?: number;
-}
-
-export default function TransactionList({ transactions, limit }: TransactionListProps) {
+}) {
   const items = limit ? transactions.slice(0, limit) : transactions;
 
   if (items.length === 0) {
     return (
-      <div className="flex flex-col items-center py-8 text-slate-400">
-        <span className="text-4xl mb-2">📭</span>
-        <p className="text-sm">Belum ada transaksi</p>
+      <div className="flex flex-col items-center py-12">
+        <p className="text-[10px] tracking-[0.3em] text-neutral-700 uppercase">Kosong</p>
       </div>
     );
   }

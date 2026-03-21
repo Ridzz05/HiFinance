@@ -1,6 +1,5 @@
 "use client";
-// app/page.tsx — Dashboard utama TMA
-// Membaca initData dari Telegram, fetch summary, lalu render kartu + chart
+// app/page.tsx
 
 import { useEffect, useState } from "react";
 import BalanceCard from "@/components/BalanceCard";
@@ -14,8 +13,8 @@ declare global {
   }
 }
 
-function Skeleton({ className }: { className?: string }) {
-  return <div className={`animate-pulse bg-slate-200 rounded-xl ${className}`} />;
+function Skeleton() {
+  return <div className="animate-pulse bg-white/4 rounded-xl h-full w-full" />;
 }
 
 export default function DashboardPage() {
@@ -25,16 +24,13 @@ export default function DashboardPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Tunggu Telegram SDK siap
     const tg = window.Telegram?.WebApp;
     tg?.ready?.();
     tg?.expand?.();
-
     const initData = tg?.initData;
 
     if (!initData) {
-      // Mode development: tampilkan pesan tanpa crash
-      setError("Buka melalui bot Telegram untuk melihat data.");
+      setError("Buka melalui bot Telegram.");
       setLoading(false);
       return;
     }
@@ -54,16 +50,15 @@ export default function DashboardPage() {
           }),
         ]);
 
-        if (!summaryRes.ok) throw new Error("Gagal mengambil ringkasan");
+        if (!summaryRes.ok) throw new Error("Gagal");
         const [summaryData, txData] = await Promise.all([
           summaryRes.json(),
           txRes.json(),
         ]);
-
         setSummary(summaryData);
         setTransactions(txData);
-      } catch (err) {
-        setError("Gagal memuat data. Coba lagi.");
+      } catch {
+        setError("Gagal memuat data.");
       } finally {
         setLoading(false);
       }
@@ -74,53 +69,70 @@ export default function DashboardPage() {
 
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen p-6 text-center">
-        <span className="text-5xl mb-4">⚠️</span>
-        <p className="text-slate-500 text-sm">{error}</p>
+      <div className="flex flex-col items-center justify-center min-h-screen gap-3">
+        <div className="w-px h-12 bg-white/10" />
+        <p className="text-[10px] tracking-[0.3em] text-neutral-600 uppercase">{error}</p>
+        <div className="w-px h-12 bg-white/10" />
       </div>
     );
   }
 
   return (
-    <div className="p-4 space-y-4">
+    <div className="px-4 pt-6 space-y-6">
       {/* Header */}
-      <div className="pt-2 pb-1">
-        <h1 className="text-xl font-bold text-slate-800">HiFinance 💰</h1>
-        <p className="text-slate-400 text-sm">Pantau keuangan harianmu</p>
+      <div className="flex items-end justify-between">
+        <div>
+          <p className="text-[9px] tracking-[0.35em] text-neutral-600 uppercase mb-1">
+            Financial Tracker
+          </p>
+          <h1 className="text-2xl font-bold tracking-tight text-white">HiFinance</h1>
+        </div>
+        <div className="text-[10px] tracking-widest text-neutral-700 uppercase">
+          {new Date().toLocaleDateString("id-ID", { month: "long", year: "numeric" })}
+        </div>
       </div>
 
       {/* Balance Card */}
       {loading ? (
-        <Skeleton className="h-40 w-full" />
+        <div className="h-44"><Skeleton /></div>
       ) : summary ? (
         <BalanceCard summary={summary} />
       ) : null}
 
-      {/* Category Chart */}
-      <div className="bg-white rounded-2xl p-4 shadow-sm">
-        <h2 className="font-semibold text-slate-700 mb-3">Pengeluaran per Kategori</h2>
-        {loading ? (
-          <Skeleton className="h-48 w-full" />
-        ) : summary ? (
-          <CategoryChart data={summary.expense_by_category} />
-        ) : null}
+      {/* Chart Section */}
+      <div>
+        <p className="text-[9px] tracking-[0.3em] text-neutral-600 uppercase mb-4">
+          Pengeluaran
+        </p>
+        <div className="border border-white/5 rounded-2xl p-4 bg-[#0a0a0a]">
+          {loading ? (
+            <div className="h-48"><Skeleton /></div>
+          ) : summary ? (
+            <CategoryChart data={summary.expense_by_category} />
+          ) : null}
+        </div>
       </div>
 
       {/* Recent Transactions */}
-      <div className="bg-white rounded-2xl p-4 shadow-sm">
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="font-semibold text-slate-700">Transaksi Terbaru</h2>
-          <a href="/transactions" className="text-indigo-500 text-xs font-medium">
+      <div>
+        <div className="flex items-center justify-between mb-4">
+          <p className="text-[9px] tracking-[0.3em] text-neutral-600 uppercase">
+            Terbaru
+          </p>
+          <a
+            href="/transactions"
+            className="text-[9px] tracking-widest text-neutral-500 uppercase hover:text-white transition-colors"
+          >
             Lihat semua →
           </a>
         </div>
-        {loading ? (
-          <div className="space-y-3">
-            {[1, 2, 3].map((i) => <Skeleton key={i} className="h-12 w-full" />)}
-          </div>
-        ) : (
-          <TransactionList transactions={transactions} />
-        )}
+        <div className="border border-white/5 rounded-2xl px-4 bg-[#0a0a0a]">
+          {loading ? (
+            <div className="h-40"><Skeleton /></div>
+          ) : (
+            <TransactionList transactions={transactions} />
+          )}
+        </div>
       </div>
     </div>
   );

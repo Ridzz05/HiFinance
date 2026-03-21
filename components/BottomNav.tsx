@@ -1,37 +1,62 @@
 "use client";
 // components/BottomNav.tsx
-// Bottom navigation bar untuk TMA
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const NAV_ITEMS = [
-  { href: "/", label: "Dashboard", icon: "📊" },
-  { href: "/transactions", label: "Transaksi", icon: "📋" },
+  {
+    href: "/",
+    label: "Dashboard",
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="3" y="3" width="7" height="7" rx="1" />
+        <rect x="14" y="3" width="7" height="7" rx="1" />
+        <rect x="3" y="14" width="7" height="7" rx="1" />
+        <rect x="14" y="14" width="7" height="7" rx="1" />
+      </svg>
+    ),
+  },
+  {
+    href: "/transactions",
+    label: "Transaksi",
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <line x1="8" y1="6" x2="21" y2="6" />
+        <line x1="8" y1="12" x2="21" y2="12" />
+        <line x1="8" y1="18" x2="21" y2="18" />
+        <line x1="3" y1="6" x2="3.01" y2="6" />
+        <line x1="3" y1="12" x2="3.01" y2="12" />
+        <line x1="3" y1="18" x2="3.01" y2="18" />
+      </svg>
+    ),
+  },
 ];
 
 export default function BottomNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t border-slate-100 z-50">
-      <div className="flex max-w-lg mx-auto">
+    <nav className="fixed bottom-0 left-0 right-0 bg-black border-t border-white/8 z-50">
+      <div className="flex max-w-sm mx-auto">
         {NAV_ITEMS.map((item) => {
           const isActive = pathname === item.href;
           return (
             <Link
               key={item.href}
               href={item.href}
-              className={`flex-1 flex flex-col items-center gap-1 py-3 transition-colors ${
-                isActive ? "text-indigo-600" : "text-slate-400"
-              }`}
+              className="flex-1 flex flex-col items-center gap-1.5 py-4 transition-colors"
+              style={{ color: isActive ? "#ffffff" : "#444444" }}
             >
-              <span className="text-xl">{item.icon}</span>
-              <span className={`text-xs font-medium ${isActive ? "text-indigo-600" : "text-slate-400"}`}>
+              {item.icon}
+              <span
+                className="text-[9px] font-medium tracking-widest uppercase"
+                style={{ color: isActive ? "#ffffff" : "#444444" }}
+              >
                 {item.label}
               </span>
               {isActive && (
-                <span className="absolute bottom-0 w-8 h-0.5 bg-indigo-600 rounded-full" />
+                <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-6 h-[1px] bg-white" />
               )}
             </Link>
           );
