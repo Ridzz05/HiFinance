@@ -1,27 +1,20 @@
-// app/layout.tsx
 import type { Metadata } from "next";
 import "./globals.css";
-import BottomNav from "@/components/BottomNav";
 
 export const metadata: Metadata = {
-  title: "HiFinance",
-  description: "Pantau keuangan via Telegram",
+  title: "HiFinance | Asisten Keuangan Pribadi",
+  description: "Pantau dan urus keuangan semudah balas chat via Telegram atau Web.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="id" suppressHydrationWarning>
+    <html lang="id" suppressHydrationWarning className="dark">
       <head>
         <script src="https://telegram.org/js/telegram-web-app.js" async />
-        {/* Prevent theme flash before hydration */}
-        <script dangerouslySetInnerHTML={{ __html: `(function(){var t=localStorage.getItem('hf-theme')||'dark';document.documentElement.setAttribute('data-theme',t);})()`}} />
+        <script dangerouslySetInnerHTML={{ __html: `(function(){var t=localStorage.getItem('hf-theme')||'dark';document.documentElement.setAttribute('data-theme',t);if(t==='dark')document.documentElement.classList.add('dark');else document.documentElement.classList.remove('dark');})()`}} />
       </head>
       <body>
-        {/* Single centred column, max 390px (typical mobile width) */}
-        <main style={{ maxWidth: 390, margin: "0 auto", width: "100%" }}>
-          {children}
-        </main>
-        <BottomNav />
+        {children}
       </body>
     </html>
   );

@@ -11,6 +11,7 @@ import { getSessionFromRequest } from "@/lib/auth";
 // Route yang TIDAK perlu auth
 const PUBLIC_PATHS = [
   "/login",
+  "/landing",
   "/api/auth/telegram",
   "/api/auth/logout",
   "/_next",
@@ -23,6 +24,25 @@ const API_PATHS = ["/api/"];
 
 export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
+
+  // Cek apakah request berasal dari Telegram Mini App
+  const isTelegramWebApp =
+    req.headers.get("x-telegram-bot-api-secret-token") !== null ||
+    req.headers.get("sec-fetch-dest") === "iframe" ||
+    req.headers.get("referer")?.includes("t.me");
+
+  // Cek JWT cookie session (browser biasa)
+  const session = await getSessionFromRequest(req);
+  const isAuthenticated = isTelegramWebApp || session;
+
+  // Handling Root Redirect
+  if (pathname === "/") {
+    if (isAuthenticated) {
+      return NextResponse.redirect(new URL("/dashboard", req.url));
+    } else {
+      return NextResponse.redirect(new URL("/landing", req.url));
+    }
+  }
 
   // Izinkan semua path publik
   if (PUBLIC_PATHS.some((p) => pathname.startsWith(p))) {
@@ -37,17 +57,11 @@ export async function proxy(req: NextRequest) {
 
   // Cek apakah request berasal dari Telegram Mini App
   // (Telegram akan set header ini di WebView)
-  const isTelegramWebApp =
-    req.headers.get("x-telegram-bot-api-secret-token") !== null ||
-    req.headers.get("sec-fetch-dest") === "iframe" ||
-    req.headers.get("referer")?.includes("t.me");
-
   if (isTelegramWebApp) {
     return NextResponse.next();
   }
 
   // Cek JWT cookie session (browser biasa)
-  const session = await getSessionFromRequest(req);
   if (session) {
     return NextResponse.next();
   }
