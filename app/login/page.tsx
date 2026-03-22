@@ -4,6 +4,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getServerSession } from "@/lib/auth";
+import LoginWidget from "./LoginWidget";
 
 export const metadata: Metadata = {
   title: "Login — HiFinance",
@@ -136,23 +137,9 @@ export default async function LoginPage({
           </div>
         )}
 
-        {/* Telegram Login Widget */}
+        {/* Telegram Login Widget — Client Component agar script bisa execute */}
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "1rem", width: "100%" }}>
-          {/* Widget resmi dari Telegram */}
-          <script
-            async
-            src="https://telegram.org/js/telegram-widget.js?22"
-            data-telegram-login={botName}
-            data-size="large"
-            data-auth-url={callbackUrl}
-            data-request-access="write"
-          />
-
-          <noscript>
-            <p style={{ fontSize: "0.8rem", color: "var(--text-muted)", textAlign: "center" }}>
-              JavaScript harus aktif untuk login dengan Telegram.
-            </p>
-          </noscript>
+          <LoginWidget botName={botName} callbackUrl={callbackUrl} />
         </div>
 
         <div style={{ borderTop: "1px solid var(--border)", width: "100%", paddingTop: "1rem" }}>
@@ -164,18 +151,36 @@ export default async function LoginPage({
         </div>
       </div>
 
-      {/* CTA untuk yang punya bot */}
-      <p style={{ fontSize: "0.83rem", color: "var(--text-muted)", textAlign: "center", margin: 0 }}>
-        Belum punya akun?{" "}
+      {/* CTA untuk yang belum punya akun */}
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
+        <p style={{ fontSize: "0.83rem", color: "var(--text-muted)", textAlign: "center", margin: 0 }}>
+          Belum pernah pakai HiFinance?
+        </p>
         <a
           href={`https://t.me/${botName}`}
           target="_blank"
           rel="noopener noreferrer"
-          style={{ color: "var(--accent)", textDecoration: "none", fontWeight: 600 }}
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "0.4rem",
+            color: "white",
+            background: "#2AABEE",
+            textDecoration: "none",
+            fontWeight: 600,
+            fontSize: "0.88rem",
+            padding: "0.5rem 1.25rem",
+            borderRadius: 8,
+            cursor: "pointer",
+          }}
         >
-          Mulai di Telegram →
+          {/* Telegram icon */}
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.248-1.97 9.289c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L8.32 14.617l-2.96-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.496.969z"/>
+          </svg>
+          Mulai di Telegram
         </a>
-      </p>
+      </div>
     </div>
   );
 }
