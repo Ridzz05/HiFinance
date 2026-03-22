@@ -1,6 +1,7 @@
 // app/api/export/route.ts
-// Server-side Excel export — generate XLSX lalu kirim ke user via Telegram Bot
-// Dual-auth: support Telegram initData (Mini App) + JWT cookie (browser)
+// Server-side Excel export
+// - Browser (JWT cookie): return file .xlsx langsung sebagai download
+// - Telegram Mini App (initData): kirim file ke chat Telegram user via Bot API
 
 export const dynamic = "force-dynamic";
 
@@ -29,8 +30,9 @@ export async function POST(req: NextRequest) {
 
   const userId = user.id;
   const firstName = user.first_name ?? "User";
+  const isTelegram = !!body?.initData; // Tentukan jalur output
 
-  // 2. Ambil semua transaksi user (max 1000)
+  // Ambil semua transaksi user (max 1000)
   const { data: transactions, error: txError } = await getSupabase()
     .from("transactions")
     .select("id, type, amount, category, note, created_at")
@@ -44,7 +46,7 @@ export async function POST(req: NextRequest) {
 
   const rows = transactions ?? [];
 
-  // 3. Generate XLSX
+  // Generate XLSX
   const XLSX = await import("xlsx");
 
   // Sheet 1: Semua Transaksi
@@ -60,10 +62,10 @@ export async function POST(req: NextRequest) {
     Catatan: tx.note || "-",
   }));
 
-  const ws1 = XLSX.utils.json_to_sheet(txRows);
+  const ws1 = XLSX.utils.json_to_sheet(txRows.length > 0 ? txRows : [{ Info: "Belum ada transaksi" }]);
   ws1["!cols"] = [{ wch: 26 }, { wch: 12 }, { wch: 14 }, { wch: 14 }, { wch: 22 }, { wch: 30 }];
 
-  // Sheet 2: Ringkasan per Kategori (bulan berjalan)
+  // Sheet 2: Ringkasan bulan berjalan
   const now = new Date();
   const year = now.getFullYear();
   const month = now.getMonth() + 1;
@@ -83,7 +85,6 @@ export async function POST(req: NextRequest) {
     .sort((a, b) => b[1] - a[1])
     .map(([cat, amt]) => ({
       Kategori: cat,
-      Total: amt,
       "Total (IDR)": fmtIDR(amt),
       Persentase: totalExpense > 0 ? `${Math.round((amt / totalExpense) * 100)}%` : "0%",
     }));
@@ -94,36 +95,48 @@ export async function POST(req: NextRequest) {
     { Keterangan: "Total Pemasukan",   Nilai: fmtIDR(totalIncome) },
     { Keterangan: "Total Pengeluaran", Nilai: fmtIDR(totalExpense) },
     { Keterangan: "Saldo",             Nilai: fmtIDR(totalIncome - totalExpense) },
-    {},
-    { Keterangan: "─── Pengeluaran per Kategori ───", Nilai: "" },
-    ...catRows.map(c => ({ Keterangan: c.Kategori, Nilai: c["Total (IDR)"], ...{ Persentase: c.Persentase } })),
+    { Keterangan: "", Nilai: "" },
+    { Keterangan: "─── Kategori Pengeluaran ───", Nilai: "" },
+    ...catRows.map(c => ({ Keterangan: c.Kategori, Nilai: c["Total (IDR)"], Persentase: c.Persentase })),
   ]);
   ws2["!cols"] = [{ wch: 28 }, { wch: 20 }, { wch: 12 }];
 
-  // Build workbook buffer
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws1, "Transaksi");
   XLSX.utils.book_append_sheet(wb, ws2, "Ringkasan");
 
-  const dateStr = new Date().toLocaleDateString("id-ID", { day: "2-digit", month: "2-digit", year: "numeric" }).replace(/\//g, "-");
+  const dateStr = now.toISOString().split("T")[0];
   const fileName = `HiFinance_${firstName}_${dateStr}.xlsx`;
   const xlsxBuffer: Buffer = XLSX.write(wb, { type: "buffer", bookType: "xlsx" });
 
-  // 4. Kirim file ke Telegram user via Bot API
+  // ── Jalur 1: Browser → return file sebagai direct download ──
+  if (!isTelegram) {
+    return new NextResponse(new Uint8Array(xlsxBuffer), {
+      status: 200,
+      headers: {
+        "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "Content-Disposition": `attachment; filename="${fileName}"`,
+        "Content-Length": String(xlsxBuffer.length),
+      },
+    });
+  }
+
+  // ── Jalur 2: Telegram Mini App → kirim file ke chat user via Bot API ──
   const botToken = process.env.BOT_TOKEN!;
   const formData = new FormData();
   formData.append("chat_id", String(userId));
-  formData.append("caption",
-    `📊 *Ekspor Data HiFinance*\n` +
-    `Halo ${firstName}! Berikut data keuanganmu.\n\n` +
-    `📅 Diekspor: ${new Date().toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}\n` +
-    `📝 Total transaksi: ${rows.length}\n\n` +
-    `_File berisi 2 sheet: Transaksi & Ringkasan bulan ini._`
+  formData.append(
+    "caption",
+    `📊 *Ekspor Data HiFinance*\nHalo ${firstName}! Berikut data keuanganmu.\n\n` +
+    `📅 Diekspor: ${now.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}\n` +
+    `📝 Total transaksi: ${rows.length}\n\n_File berisi 2 sheet: Transaksi & Ringkasan._`
   );
   formData.append("parse_mode", "Markdown");
   formData.append(
     "document",
-    new Blob([new Uint8Array(xlsxBuffer)], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" }),
+    new Blob([new Uint8Array(xlsxBuffer)], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    }),
     fileName,
   );
 

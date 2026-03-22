@@ -138,47 +138,52 @@ export default function TransactionsPage() {
 
   async function handleExport() {
     const initData = window.Telegram?.WebApp?.initData;
-    const makeBody = (extra?: object) =>
-      initData
-        ? JSON.stringify({ initData, ...extra })
-        : JSON.stringify({ ...extra });
-
     setExporting(true);
+
     try {
-      const [txRes, sumRes] = await Promise.all([
-        fetch("/api/transactions", { method: "POST", headers: { "Content-Type": "application/json" }, body: makeBody({ limit: 500 }) }),
-        fetch("/api/summary",      { method: "POST", headers: { "Content-Type": "application/json" }, body: makeBody() }),
-      ]);
-      if (!txRes.ok || !sumRes.ok) throw new Error("Gagal mengambil data");
-      const txs = await txRes.json();
-      const sum = await sumRes.json();
-      const XLSX = await import("xlsx");
-      const wb   = XLSX.utils.book_new();
-      const txRows = txs.map((tx: { created_at: string; type: string; category: string; amount: number; note: string }) => ({
-        Tanggal: new Date(tx.created_at).toLocaleDateString("id-ID", { day: "2-digit", month: "long", year: "numeric" }),
-        Jenis: tx.type === "income" ? "Pemasukan" : "Pengeluaran",
-        Kategori: tx.category, Nominal: tx.amount,
-        "Nominal (IDR)": fmtIDR(tx.amount), Catatan: tx.note || "-",
-      }));
-      const ws1 = XLSX.utils.json_to_sheet(txRows);
-      ws1["!cols"] = [{ wch: 26 }, { wch: 12 }, { wch: 14 }, { wch: 12 }, { wch: 20 }, { wch: 30 }];
-      const catRows = (sum.expense_by_category || []).map((c: { category: string; amount: number; percentage: number }) => ({
-        Kategori: c.category, Total: c.amount, "Total (IDR)": fmtIDR(c.amount), Persentase: `${c.percentage}%`,
-      }));
-      const ws2 = XLSX.utils.json_to_sheet([
-        { Keterangan: "Periode",           Nilai: sum.period?.label ?? "-" },
-        { Keterangan: "Total Pemasukan",   Nilai: fmtIDR(sum.total_income  ?? 0) },
-        { Keterangan: "Total Pengeluaran", Nilai: fmtIDR(sum.total_expense ?? 0) },
-        { Keterangan: "Saldo",             Nilai: fmtIDR(sum.balance       ?? 0) },
-        {}, ...catRows,
-      ]);
-      ws2["!cols"] = [{ wch: 20 }, { wch: 18 }];
-      XLSX.utils.book_append_sheet(wb, ws1, "Transaksi");
-      XLSX.utils.book_append_sheet(wb, ws2, "Ringkasan");
-      XLSX.writeFile(wb, `HiFinance_${new Date().toISOString().split("T")[0]}.xlsx`);
-    } catch { alert("Gagal ekspor. Coba lagi."); }
-    finally { setExporting(false); }
+      const body = initData
+        ? JSON.stringify({ initData })
+        : JSON.stringify({});
+
+      const res = await fetch("/api/export", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body,
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err?.error ?? "Gagal ekspor");
+      }
+
+      if (initData) {
+        // Telegram Mini App → file dikirim ke chat, tampilkan notif
+        alert("✅ File rekap sudah dikirim ke chat Telegram kamu!");
+      } else {
+        // Browser → download file langsung dari response
+        const blob = await res.blob();
+        const fileName = res.headers.get("Content-Disposition")
+          ?.match(/filename="(.+?)"/)?.[1]
+          ?? `HiFinance_${new Date().toISOString().split("T")[0]}.xlsx`;
+
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      }
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Gagal ekspor. Coba lagi.";
+      alert(msg);
+    } finally {
+      setExporting(false);
+    }
   }
+
+
 
   const filtered = filter === "all" ? transactions : transactions.filter(t => t.type === filter);
   const counts   = {
