@@ -37,11 +37,8 @@ export async function proxy(req: NextRequest) {
 
   // Handling Root Redirect
   if (pathname === "/") {
-    if (isAuthenticated) {
-      return NextResponse.redirect(new URL("/dashboard", req.url));
-    } else {
-      return NextResponse.redirect(new URL("/landing", req.url));
-    }
+    // Auth dihapus sementara, selalu arahkan root ke /dashboard
+    return NextResponse.redirect(new URL("/dashboard", req.url));
   }
 
   // Izinkan semua path publik
@@ -49,27 +46,24 @@ export async function proxy(req: NextRequest) {
     return NextResponse.next();
   }
 
-  // Untuk API routes — izinkan lewat, tiap route handle validasinya sendiri
+  // Izinkan semua akses ke dashboard & transaksi sementara (Testing tanpa auth)
+  return NextResponse.next();
   // (support initData dari Telegram ATAU JWT cookie)
-  if (API_PATHS.some((p) => pathname.startsWith(p))) {
-    return NextResponse.next();
-  }
+  // if (API_PATHS.some((p) => pathname.startsWith(p))) {
+  //   return NextResponse.next();
+  // }
 
-  // Cek apakah request berasal dari Telegram Mini App
-  // (Telegram akan set header ini di WebView)
-  if (isTelegramWebApp) {
-    return NextResponse.next();
-  }
+  // if (isTelegramWebApp) {
+  //   return NextResponse.next();
+  // }
 
-  // Cek JWT cookie session (browser biasa)
-  if (session) {
-    return NextResponse.next();
-  }
+  // if (session) {
+  //   return NextResponse.next();
+  // }
 
-  // Tidak ada auth → redirect ke login
-  const loginUrl = new URL("/login", req.url);
-  loginUrl.searchParams.set("redirect", pathname);
-  return NextResponse.redirect(loginUrl);
+  // const loginUrl = new URL("/login", req.url);
+  // loginUrl.searchParams.set("redirect", pathname);
+  // return NextResponse.redirect(loginUrl);
 }
 
 export const config = {
