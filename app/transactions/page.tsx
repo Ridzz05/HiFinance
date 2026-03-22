@@ -8,36 +8,86 @@ import { Transaction } from "@/lib/types";
 
 type Filter = "all" | "income" | "expense";
 
-const FILTERS: { key: Filter; label: string; hint: string }[] = [
-  { key: "all",     label: "Semua",      hint: "Semua transaksi" },
-  { key: "income",  label: "Masuk",      hint: "Pemasukan" },
-  { key: "expense", label: "Keluar",     hint: "Pengeluaran" },
+const FILTERS: { key: Filter; label: string }[] = [
+  { key: "all",     label: "Semua" },
+  { key: "income",  label: "Masuk" },
+  { key: "expense", label: "Keluar" },
 ];
 
 const fmtIDR = (n: number) =>
   new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(n);
 
+/* ─── Skeleton atom ─── */
+function S({ w = "100%", h = 14, r = 8 }: { w?: string | number; h?: number; r?: number }) {
+  return <div className="skeleton" style={{ width: w, height: h, borderRadius: r, flexShrink: 0 }} />;
+}
+
+/* ─── Full-page skeleton for transactions ─── */
+function TransactionsSkeleton() {
+  return (
+    <div style={{ padding: "28px 16px 24px", display: "flex", flexDirection: "column", gap: 20 }}>
+
+      {/* Header */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <S w={90} h={10} />
+          <S w={140} h={26} r={6} />
+        </div>
+        <S w={36} h={20} r={10} />
+      </div>
+
+      {/* Filter tabs skeleton */}
+      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        <S w={200} h={10} />
+        <div style={{ display: "flex", gap: 8 }}>
+          {[0, 1, 2].map(i => (
+            <div key={i} className="skeleton" style={{
+              flex: 1, height: 64, borderRadius: 14,
+              display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 6,
+            }} />
+          ))}
+        </div>
+      </div>
+
+      {/* List skeleton */}
+      <div style={{ background: "var(--surface)", border: "1px solid var(--border-hi)", borderRadius: 20, padding: "12px 16px" }}>
+        {[0,1,2,3,4,5].map(i => (
+          <div key={i} style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 0", borderBottom: i < 5 ? "1px solid var(--border)" : "none" }}>
+            <S w={38} h={38} r={10} />
+            <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 6 }}>
+              <S w="55%" h={13} r={4} />
+              <S w="75%" h={11} r={4} />
+            </div>
+            <S w={55} h={13} r={4} />
+          </div>
+        ))}
+      </div>
+
+      {/* Export banner skeleton */}
+      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        <S w={80} h={10} />
+        <div className="skeleton" style={{ height: 72, borderRadius: 16 }} />
+      </div>
+    </div>
+  );
+}
+
+/* ─── Export full-width banner ─── */
 function ExportBanner({ onClick, loading }: { onClick: () => void; loading: boolean }) {
   return (
     <button
       onClick={onClick}
       disabled={loading}
       style={{
-        width: "100%",
-        padding: "14px 20px",
-        borderRadius: 16,
-        background: "var(--surface)",
-        border: "1px solid var(--border-hi)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
+        width: "100%", padding: "14px 20px", borderRadius: 16,
+        background: "var(--surface)", border: "1px solid var(--border-hi)",
+        display: "flex", alignItems: "center", justifyContent: "space-between",
         cursor: loading ? "not-allowed" : "pointer",
-        opacity: loading ? 0.6 : 1,
-        transition: "opacity 0.15s",
+        opacity: loading ? 0.6 : 1, transition: "opacity 0.15s",
       }}
     >
       <div style={{ textAlign: "left" }}>
-        <p style={{ fontSize: 13, fontWeight: 700, color: "var(--text)", marginBottom: 2 }}>
+        <p style={{ fontSize: 13, fontWeight: 700, color: "var(--text)", marginBottom: 3 }}>
           Unduh Rekap Excel
         </p>
         <p style={{ fontSize: 11, color: "var(--text-2)", lineHeight: 1.4 }}>
@@ -45,7 +95,7 @@ function ExportBanner({ onClick, loading }: { onClick: () => void; loading: bool
         </p>
       </div>
       <div style={{
-        width: 40, height: 40, borderRadius: 12, flexShrink: 0, marginLeft: 12,
+        width: 40, height: 40, borderRadius: 12, flexShrink: 0, marginLeft: 16,
         display: "flex", alignItems: "center", justifyContent: "center",
         background: "var(--pill-active-bg)", color: "var(--pill-active-text)",
       }}>
@@ -64,9 +114,9 @@ function ExportBanner({ onClick, loading }: { onClick: () => void; loading: bool
 }
 
 export default function TransactionsPage() {
-  const [transactions, setTx]   = useState<Transaction[]>([]);
-  const [loading, setLoading]   = useState(true);
-  const [filter, setFilter]     = useState<Filter>("all");
+  const [transactions, setTx]     = useState<Transaction[]>([]);
+  const [loading, setLoading]     = useState(true);
+  const [filter, setFilter]       = useState<Filter>("all");
   const [exporting, setExporting] = useState(false);
 
   useEffect(() => {
@@ -94,14 +144,12 @@ export default function TransactionsPage() {
       const txs = await txRes.json();
       const sum = await sumRes.json();
       const XLSX = await import("xlsx");
-      const wb = XLSX.utils.book_new();
+      const wb   = XLSX.utils.book_new();
       const txRows = txs.map((tx: { created_at: string; type: string; category: string; amount: number; note: string }) => ({
         Tanggal: new Date(tx.created_at).toLocaleDateString("id-ID", { day: "2-digit", month: "long", year: "numeric" }),
         Jenis: tx.type === "income" ? "Pemasukan" : "Pengeluaran",
-        Kategori: tx.category,
-        Nominal: tx.amount,
-        "Nominal (IDR)": fmtIDR(tx.amount),
-        Catatan: tx.note || "-",
+        Kategori: tx.category, Nominal: tx.amount,
+        "Nominal (IDR)": fmtIDR(tx.amount), Catatan: tx.note || "-",
       }));
       const ws1 = XLSX.utils.json_to_sheet(txRows);
       ws1["!cols"] = [{ wch: 26 }, { wch: 12 }, { wch: 14 }, { wch: 12 }, { wch: 20 }, { wch: 30 }];
@@ -110,9 +158,9 @@ export default function TransactionsPage() {
       }));
       const ws2 = XLSX.utils.json_to_sheet([
         { Keterangan: "Periode",           Nilai: sum.period?.label ?? "-" },
-        { Keterangan: "Total Pemasukan",   Nilai: fmtIDR(sum.total_income ?? 0) },
+        { Keterangan: "Total Pemasukan",   Nilai: fmtIDR(sum.total_income  ?? 0) },
         { Keterangan: "Total Pengeluaran", Nilai: fmtIDR(sum.total_expense ?? 0) },
-        { Keterangan: "Saldo",             Nilai: fmtIDR(sum.balance ?? 0) },
+        { Keterangan: "Saldo",             Nilai: fmtIDR(sum.balance       ?? 0) },
         {}, ...catRows,
       ]);
       ws2["!cols"] = [{ wch: 20 }, { wch: 18 }];
@@ -124,11 +172,14 @@ export default function TransactionsPage() {
   }
 
   const filtered = filter === "all" ? transactions : transactions.filter(t => t.type === filter);
-  const counts = {
+  const counts   = {
     all:     transactions.length,
     income:  transactions.filter(t => t.type === "income").length,
     expense: transactions.filter(t => t.type === "expense").length,
   };
+
+  /* Show full-page skeleton while loading */
+  if (loading) return <TransactionsSkeleton />;
 
   return (
     <div style={{ padding: "28px 16px 24px", display: "flex", flexDirection: "column", gap: 20 }}>
@@ -158,35 +209,17 @@ export default function TransactionsPage() {
           {FILTERS.map(({ key, label }) => {
             const active = filter === key;
             return (
-              <button
-                key={key}
-                onClick={() => setFilter(key)}
-                style={{
-                  flex: 1,
-                  padding: "12px 4px",
-                  borderRadius: 14,
-                  border: `1px solid ${active ? "transparent" : "var(--border-hi)"}`,
-                  background: active ? "var(--pill-active-bg)" : "var(--pill-bg)",
-                  cursor: "pointer",
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  gap: 4,
-                  transition: "all 0.15s",
-                }}
-              >
-                <span style={{
-                  fontSize: 20, fontWeight: 700, fontVariantNumeric: "tabular-nums",
-                  color: active ? "var(--pill-active-text)" : "var(--text)",
-                  lineHeight: 1,
-                }}>
-                  {loading ? "—" : counts[key]}
+              <button key={key} onClick={() => setFilter(key)} style={{
+                flex: 1, padding: "12px 4px", borderRadius: 14,
+                border: `1px solid ${active ? "transparent" : "var(--border-hi)"}`,
+                background: active ? "var(--pill-active-bg)" : "var(--pill-bg)",
+                cursor: "pointer", display: "flex", flexDirection: "column",
+                alignItems: "center", gap: 4, transition: "all 0.15s",
+              }}>
+                <span style={{ fontSize: 20, fontWeight: 700, fontVariantNumeric: "tabular-nums", color: active ? "var(--pill-active-text)" : "var(--text)", lineHeight: 1 }}>
+                  {counts[key]}
                 </span>
-                <span style={{
-                  fontSize: 9, letterSpacing: "0.18em", textTransform: "uppercase",
-                  color: active ? "var(--pill-active-text)" : "var(--pill-text)",
-                  fontWeight: 600,
-                }}>
+                <span style={{ fontSize: 9, letterSpacing: "0.18em", textTransform: "uppercase", color: active ? "var(--pill-active-text)" : "var(--pill-text)", fontWeight: 600 }}>
                   {label}
                 </span>
               </button>
@@ -195,38 +228,28 @@ export default function TransactionsPage() {
         </div>
       </div>
 
-      {/* ── Transaction list ── */}
+      {/* ── List ── */}
       <div className="fade-2">
         <div style={{ background: "var(--surface)", border: "1px solid var(--border-hi)", borderRadius: 20, padding: "0 16px" }}>
-          {loading ? (
-            <div style={{ padding: "16px 0", display: "flex", flexDirection: "column", gap: 8 }}>
-              {[...Array(5)].map((_, i) => (
-                <div key={i} className="skeleton" style={{ height: 52, borderRadius: 12 }} />
-              ))}
-            </div>
-          ) : (
-            <TransactionList transactions={filtered} grouped />
-          )}
+          <TransactionList transactions={filtered} grouped />
         </div>
-        {!loading && filtered.length > 0 && (
+        {filtered.length > 0 && (
           <p style={{ textAlign: "center", fontSize: 10, letterSpacing: "0.2em", color: "var(--text-2)", textTransform: "uppercase", marginTop: 12 }}>
-            Menampilkan {filtered.length} transaksi
+            {filtered.length} transaksi
           </p>
         )}
       </div>
 
-      {/* ── Export banner ── */}
-      {!loading && (
-        <div className="fade-3">
-          <p style={{ fontSize: 9, letterSpacing: "0.3em", color: "var(--text-2)", textTransform: "uppercase", marginBottom: 10 }}>
-            Ekspor Data
-          </p>
-          <ExportBanner onClick={handleExport} loading={exporting} />
-          <p style={{ fontSize: 10, color: "var(--text-2)", marginTop: 8, lineHeight: 1.5 }}>
-            File Excel berisi 2 sheet: semua transaksi dan ringkasan per kategori.
-          </p>
-        </div>
-      )}
+      {/* ── Export ── */}
+      <div className="fade-3">
+        <p style={{ fontSize: 9, letterSpacing: "0.3em", color: "var(--text-2)", textTransform: "uppercase", marginBottom: 10 }}>
+          Ekspor Data
+        </p>
+        <ExportBanner onClick={handleExport} loading={exporting} />
+        <p style={{ fontSize: 10, color: "var(--text-2)", marginTop: 8, lineHeight: 1.5 }}>
+          File .xlsx berisi 2 sheet: semua transaksi dan ringkasan kategori.
+        </p>
+      </div>
 
     </div>
   );

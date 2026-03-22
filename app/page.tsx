@@ -14,20 +14,88 @@ declare global {
   }
 }
 
-function SkeletonBox({ h }: { h: number }) {
-  return <div className="skeleton" style={{ height: h, borderRadius: 16 }} />;
+/* ─── Skeleton atoms ─── */
+function S({ w = "100%", h = 14, r = 8 }: { w?: string | number; h?: number; r?: number }) {
+  return <div className="skeleton" style={{ width: w, height: h, borderRadius: r, flexShrink: 0 }} />;
 }
 
-/* ── Tip chip ── */
+function DashboardSkeleton() {
+  return (
+    <div style={{ padding: "28px 16px 24px", display: "flex", flexDirection: "column", gap: 24 }}>
+
+      {/* Header */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <S w={90} h={10} />
+          <S w={130} h={26} r={6} />
+        </div>
+        <S w={36} h={20} r={10} />
+      </div>
+
+      {/* Balance Card */}
+      <div style={{ background: "var(--surface)", border: "1px solid var(--border-hi)", borderRadius: 20, padding: "24px 20px", display: "flex", flexDirection: "column", gap: 16 }}>
+        <S w={80} h={10} />
+        <S w="70%" h={38} r={6} />
+        <div style={{ height: 1, background: "var(--border)" }} />
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}><S w={60} h={10} /><S w="80%" h={18} r={6} /></div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}><S w={60} h={10} /><S w="80%" h={18} r={6} /></div>
+        </div>
+      </div>
+
+      {/* Chart section */}
+      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <S w={130} h={10} />
+          <S w={60} h={10} />
+        </div>
+        <div style={{ background: "var(--surface)", border: "1px solid var(--border-hi)", borderRadius: 20, padding: "20px 16px 16px" }}>
+          {/* Donut placeholder */}
+          <div style={{ display: "flex", justifyContent: "center", marginBottom: 16 }}>
+            <div className="skeleton" style={{ width: 144, height: 144, borderRadius: "50%" }} />
+          </div>
+          {/* Legend */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px 16px" }}>
+            {[0,1,2,3].map(i => (
+              <div key={i} style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                <S w={8} h={8} r={2} />
+                <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 4 }}>
+                  <S w="60%" h={9} />
+                  <S w="40%" h={11} r={4} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Recent Transactions */}
+      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <S w={110} h={10} />
+          <S w={70} h={10} />
+        </div>
+        <div style={{ background: "var(--surface)", border: "1px solid var(--border-hi)", borderRadius: 20, padding: "12px 16px" }}>
+          {[0,1,2].map(i => (
+            <div key={i} style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 0", borderBottom: i < 2 ? "1px solid var(--border)" : "none" }}>
+              <S w={38} h={38} r={10} />
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 6 }}>
+                <S w="50%" h={13} r={4} />
+                <S w="70%" h={11} r={4} />
+              </div>
+              <S w={60} h={13} r={4} />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Tip text ─── */
 function Tip({ text }: { text: string }) {
   return (
-    <p style={{
-      fontSize: 10,
-      color: "var(--text-2)",
-      letterSpacing: "0.01em",
-      lineHeight: 1.5,
-      padding: "8px 0 2px",
-    }}>
+    <p style={{ fontSize: 10, color: "var(--text-2)", lineHeight: 1.5, padding: "6px 0 2px" }}>
       {text}
     </p>
   );
@@ -43,7 +111,7 @@ export default function DashboardPage() {
     const tg = window.Telegram?.WebApp;
     tg?.ready?.(); tg?.expand?.();
     const initData = tg?.initData;
-    if (!initData) { setError("Buka aplikasi ini melalui bot Telegram."); setLoading(false); return; }
+    if (!initData) { setError("Buka melalui bot Telegram."); setLoading(false); return; }
 
     (async () => {
       try {
@@ -67,6 +135,9 @@ export default function DashboardPage() {
     </div>
   );
 
+  /* Show full-page skeleton while loading */
+  if (loading) return <DashboardSkeleton />;
+
   return (
     <div style={{ padding: "28px 16px 24px", display: "flex", flexDirection: "column", gap: 24 }}>
 
@@ -88,9 +159,9 @@ export default function DashboardPage() {
 
       {/* ── Balance Card ── */}
       <div className="fade-1">
-        <Tip text="Ringkasan keuangan bulan ini: total pemasukan, pengeluaran, dan saldo berjalan." />
+        <Tip text="Ringkasan keuangan bulan ini — saldo, pemasukan & pengeluaran." />
         <div style={{ marginTop: 8 }}>
-          {loading ? <SkeletonBox h={172} /> : summary && <BalanceCard summary={summary} />}
+          {summary && <BalanceCard summary={summary} />}
         </div>
       </div>
 
@@ -103,7 +174,7 @@ export default function DashboardPage() {
           <p style={{ fontSize: 9, color: "var(--text-2)" }}>Bulan ini</p>
         </div>
         <div style={{ background: "var(--surface)", border: "1px solid var(--border-hi)", borderRadius: 20, padding: "20px 16px 16px" }}>
-          {loading ? <SkeletonBox h={200} /> : summary && <CategoryChart data={summary.expense_by_category} />}
+          {summary && <CategoryChart data={summary.expense_by_category} />}
         </div>
         <Tip text="Ketuk potongan grafik untuk melihat nominal per kategori." />
       </div>
@@ -114,20 +185,15 @@ export default function DashboardPage() {
           <p style={{ fontSize: 9, letterSpacing: "0.3em", color: "var(--text-2)", textTransform: "uppercase" }}>
             Transaksi Terbaru
           </p>
-          <a href="/transactions" style={{ fontSize: 10, fontWeight: 600, color: "var(--text)", textDecoration: "none", letterSpacing: "0.05em" }}>
+          <a href="/transactions" style={{ fontSize: 10, fontWeight: 600, color: "var(--text)", textDecoration: "none" }}>
             Lihat semua →
           </a>
         </div>
         <div style={{ background: "var(--surface)", border: "1px solid var(--border-hi)", borderRadius: 20, padding: "0 16px" }}>
-          {loading
-            ? <div style={{ padding: "16px 0", display: "flex", flexDirection: "column", gap: 8 }}>
-                {[0,1,2].map(i => <SkeletonBox key={i} h={52} />)}
-              </div>
-            : <TransactionList transactions={transactions} />
-          }
+          <TransactionList transactions={transactions} />
         </div>
-        {!loading && transactions.length === 0 && (
-          <Tip text="Belum ada transaksi bulan ini. Transaksi baru bisa ditambahkan melalui bot Telegram." />
+        {transactions.length === 0 && (
+          <Tip text="Belum ada transaksi. Tambahkan lewat bot Telegram." />
         )}
       </div>
 
