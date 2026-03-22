@@ -6,12 +6,6 @@ import TransactionList from "@/components/TransactionList";
 import ThemeToggle from "@/components/ThemeToggle";
 import { Transaction } from "@/lib/types";
 
-declare global {
-  interface Window {
-    Telegram?: { WebApp?: { initData?: string } };
-  }
-}
-
 type Filter = "all" | "income" | "expense";
 
 const FILTERS: { key: Filter; label: string; hint: string }[] = [
