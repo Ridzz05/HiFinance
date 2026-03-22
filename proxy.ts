@@ -21,7 +21,7 @@ const PUBLIC_PATHS = [
 // API routes yang bisa skip middleware (validasi dilakukan sendiri)
 const API_PATHS = ["/api/"];
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   // Izinkan semua path publik
