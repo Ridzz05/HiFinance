@@ -121,11 +121,15 @@ export default function TransactionsPage() {
 
   useEffect(() => {
     const initData = window.Telegram?.WebApp?.initData;
-    if (!initData) { setLoading(false); return; }
+    // Dual-auth: kirim initData jika ada (Telegram), atau andalkan JWT cookie (browser)
+    const body = initData
+      ? JSON.stringify({ initData, limit: 50 })
+      : JSON.stringify({ limit: 50 });
+
     fetch("/api/transactions", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ initData, limit: 50 }),
+      body,
     })
       .then(r => r.json()).then(setTx)
       .catch(console.error)
@@ -134,13 +138,18 @@ export default function TransactionsPage() {
 
   async function handleExport() {
     const initData = window.Telegram?.WebApp?.initData;
-    if (!initData) { alert("Buka melalui Telegram."); return; }
+    const makeBody = (extra?: object) =>
+      initData
+        ? JSON.stringify({ initData, ...extra })
+        : JSON.stringify({ ...extra });
+
     setExporting(true);
     try {
       const [txRes, sumRes] = await Promise.all([
-        fetch("/api/transactions", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ initData, limit: 500 }) }),
-        fetch("/api/summary",      { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ initData }) }),
+        fetch("/api/transactions", { method: "POST", headers: { "Content-Type": "application/json" }, body: makeBody({ limit: 500 }) }),
+        fetch("/api/summary",      { method: "POST", headers: { "Content-Type": "application/json" }, body: makeBody() }),
       ]);
+      if (!txRes.ok || !sumRes.ok) throw new Error("Gagal mengambil data");
       const txs = await txRes.json();
       const sum = await sumRes.json();
       const XLSX = await import("xlsx");

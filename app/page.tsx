@@ -111,15 +111,20 @@ export default function DashboardPage() {
     const tg = window.Telegram?.WebApp;
     tg?.ready?.(); tg?.expand?.();
     const initData = tg?.initData;
-    if (!initData) { setError("Buka melalui bot Telegram."); setLoading(false); return; }
 
     (async () => {
       try {
+        // Dual-auth: kirim initData jika ada (Telegram), atau andalkan JWT cookie (browser)
+        const makeBody = (extra?: object) =>
+          initData
+            ? JSON.stringify({ initData, ...extra })
+            : JSON.stringify({ ...extra });
+
         const [sRes, tRes] = await Promise.all([
-          fetch("/api/summary",      { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ initData }) }),
-          fetch("/api/transactions", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ initData, limit: 5 }) }),
+          fetch("/api/summary",      { method: "POST", headers: { "Content-Type": "application/json" }, body: makeBody() }),
+          fetch("/api/transactions", { method: "POST", headers: { "Content-Type": "application/json" }, body: makeBody({ limit: 5 }) }),
         ]);
-        if (!sRes.ok) throw new Error();
+        if (!sRes.ok) throw new Error(await sRes.text());
         const [s, t] = await Promise.all([sRes.json(), tRes.json()]);
         setSummary(s); setTx(t);
       } catch { setError("Gagal memuat data. Coba lagi."); }
