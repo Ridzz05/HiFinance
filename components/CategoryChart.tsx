@@ -4,8 +4,9 @@
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import { CategorySummary } from "@/lib/types";
 
-const DARK  = ["#ffffff", "#aaaaaa", "#666666", "#444444", "#222222", "#181818"];
-const LIGHT = ["#000000", "#555555", "#888888", "#aaaaaa", "#cccccc", "#e0e0e0"];
+// Emerald-to-gray palette for chart slices
+const DARK_COLORS  = ["#10b981", "#059669", "#aaaaaa", "#666666", "#444444", "#222222"];
+const LIGHT_COLORS = ["#059669", "#10b981", "#888888", "#aaaaaa", "#cccccc", "#e0e0e0"];
 
 const fmtShort = (n: number) => {
   if (n >= 1_000_000) return `Rp ${(n / 1_000_000).toFixed(1)}jt`;
@@ -14,8 +15,8 @@ const fmtShort = (n: number) => {
 };
 
 function getColors() {
-  if (typeof document === "undefined") return DARK;
-  return document.documentElement.getAttribute("data-theme") === "light" ? LIGHT : DARK;
+  if (typeof document === "undefined") return DARK_COLORS;
+  return document.documentElement.getAttribute("data-theme") === "light" ? LIGHT_COLORS : DARK_COLORS;
 }
 
 export default function CategoryChart({ data }: { data: CategorySummary[] }) {
@@ -35,8 +36,12 @@ export default function CategoryChart({ data }: { data: CategorySummary[] }) {
     <div>
       <ResponsiveContainer width="100%" height={160}>
         <PieChart>
-          <Pie data={data} cx="50%" cy="50%" innerRadius={46} outerRadius={72}
-            paddingAngle={2} dataKey="amount" strokeWidth={0}>
+          <Pie
+            data={data}
+            cx="50%" cy="50%"
+            innerRadius={46} outerRadius={72}
+            paddingAngle={2} dataKey="amount" strokeWidth={0}
+          >
             {data.map((_, i) => <Cell key={i} fill={colors[i % colors.length]} />)}
           </Pie>
           <Tooltip
@@ -44,9 +49,7 @@ export default function CategoryChart({ data }: { data: CategorySummary[] }) {
             contentStyle={{
               background: "var(--tooltip-bg)",
               border: "1px solid var(--border-hi)",
-              borderRadius: 10,
-              fontSize: 11,
-              color: "var(--text)",
+              borderRadius: 10, fontSize: 11, color: "var(--text)",
             }}
             itemStyle={{ color: "var(--text-2)" }}
             labelStyle={{ color: "var(--text)", fontWeight: 600 }}
@@ -60,10 +63,10 @@ export default function CategoryChart({ data }: { data: CategorySummary[] }) {
           <div key={item.category} style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <span style={{ width: 8, height: 8, borderRadius: 2, background: colors[i % colors.length], flexShrink: 0 }} />
             <div style={{ minWidth: 0 }}>
-              <p style={{ fontSize: 10, letterSpacing: "0.15em", color: "var(--text-2)", textTransform: "uppercase", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              <p style={{ fontSize: 10, letterSpacing: "0.12em", color: "var(--text-2)", textTransform: "uppercase", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                 {item.category}
               </p>
-              <p style={{ fontSize: 11, fontWeight: 600, color: "var(--text)" }}>{item.percentage}%</p>
+              <p style={{ fontSize: 11, fontWeight: 700, color: "var(--text)" }}>{item.percentage}%</p>
             </div>
           </div>
         ))}

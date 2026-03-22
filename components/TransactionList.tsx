@@ -21,7 +21,6 @@ function formatDate(iso: string) {
 
 function TxRow({ tx }: { tx: Transaction }) {
   const isExp = tx.type === "expense";
-  const initials = tx.category.slice(0, 2).toUpperCase();
   const time = new Date(tx.created_at).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
 
   return (
@@ -29,14 +28,17 @@ function TxRow({ tx }: { tx: Transaction }) {
       display: "flex", alignItems: "center", gap: 12,
       padding: "12px 0", borderBottom: "1px solid var(--border)",
     }}>
-      {/* Initials */}
+      {/* Initials avatar — tinted by type */}
       <div style={{
         width: 38, height: 38, borderRadius: 10, flexShrink: 0,
         display: "flex", alignItems: "center", justifyContent: "center",
-        background: "var(--surface)", border: "1px solid var(--border-hi)",
-        fontSize: 10, fontWeight: 700, letterSpacing: "0.05em", color: "var(--text-2)",
+        background: isExp ? "var(--expense-dim)" : "var(--income-dim)",
+        border: `1px solid ${isExp ? "var(--expense)" : "var(--income)"}`,
+        fontSize: 10, fontWeight: 700, letterSpacing: "0.05em",
+        color: isExp ? "var(--expense)" : "var(--income)",
+        opacity: 0.9,
       }}>
-        {initials}
+        {tx.category.slice(0, 2).toUpperCase()}
       </div>
 
       {/* Info */}
@@ -50,7 +52,11 @@ function TxRow({ tx }: { tx: Transaction }) {
       </div>
 
       {/* Amount */}
-      <p style={{ fontSize: 13, fontWeight: 700, color: isExp ? "var(--expense)" : "var(--income)", flexShrink: 0, fontVariantNumeric: "tabular-nums" }}>
+      <p style={{
+        fontSize: 13, fontWeight: 700,
+        color: isExp ? "var(--expense)" : "var(--income)",
+        flexShrink: 0, fontVariantNumeric: "tabular-nums",
+      }}>
         {isExp ? "−" : "+"}Rp {fmt(tx.amount)}
       </p>
     </div>
@@ -92,9 +98,9 @@ export default function TransactionList({ transactions, grouped = false }: {
       {groups.map(g => (
         <div key={g.label}>
           <p style={{
-            fontSize: 9, letterSpacing: "0.2em", color: "var(--text-2)", textTransform: "uppercase",
-            padding: "10px 0 6px", fontWeight: 700, background: "var(--surface)",
-            position: "sticky", top: 0,
+            fontSize: 9, letterSpacing: "0.2em", color: "var(--accent)",
+            textTransform: "uppercase", padding: "10px 0 6px",
+            fontWeight: 700, background: "var(--surface)", position: "sticky", top: 0,
           }}>
             {g.label}
           </p>

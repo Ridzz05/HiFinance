@@ -33,61 +33,30 @@ const ITEMS = [
 
 export default function BottomNav() {
   const path = usePathname();
-
   return (
     <nav style={{
-      position: "fixed",
-      bottom: 0,
-      left: 0,
-      right: 0,
-      zIndex: 50,
-      background: "var(--bg)",
-      borderTop: "1px solid var(--border-hi)",
-      /* push content above device home indicator */
+      position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 50,
+      background: "var(--bg)", borderTop: "1px solid var(--border-hi)",
       paddingBottom: "env(safe-area-inset-bottom, 0px)",
     }}>
-      <div style={{
-        display: "flex",
-        maxWidth: 390,
-        margin: "0 auto",
-        height: "var(--nav-h)",      /* fixed 60px tap zone */
-      }}>
+      <div style={{ display: "flex", maxWidth: 390, margin: "0 auto", height: "var(--nav-h)" }}>
         {ITEMS.map(({ href, label, icon }) => {
           const active = path === href;
           return (
-            <Link
-              key={href}
-              href={href}
-              style={{
-                flex: 1,
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: 4,
-                color: active ? "var(--text)" : "var(--text-2)",
-                position: "relative",
-                textDecoration: "none",
-              }}
-            >
+            <Link key={href} href={href} style={{
+              flex: 1, display: "flex", flexDirection: "column",
+              alignItems: "center", justifyContent: "center", gap: 4,
+              color: active ? "var(--accent)" : "var(--text-2)",
+              position: "relative", textDecoration: "none",
+            }}>
               {icon}
-              <span style={{
-                fontSize: 9,
-                letterSpacing: "0.15em",
-                textTransform: "uppercase",
-                fontWeight: 600,
-              }}>
+              <span style={{ fontSize: 9, letterSpacing: "0.15em", textTransform: "uppercase", fontWeight: 600 }}>
                 {label}
               </span>
               {active && (
                 <span style={{
-                  position: "absolute",
-                  bottom: 0,
-                  left: "50%",
-                  transform: "translateX(-50%)",
-                  width: 28,
-                  height: 1,
-                  background: "var(--text)",
+                  position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)",
+                  width: 28, height: 2, background: "var(--accent)", borderRadius: 2,
                 }} />
               )}
             </Link>

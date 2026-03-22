@@ -10,12 +10,21 @@
   --text:             #ffffff;
   --text-2:           #888888;
   --text-3:           #282828;
-  --income:           #ffffff;
-  --expense:          #555555;
-  --pill-active-bg:   #ffffff;
+
+  /* Accent — Emerald + Soft Red */
+  --income:           #10b981;   /* emerald */
+  --income-dim:       rgba(16,185,129,0.12);
+  --expense:          #f87171;   /* soft red */
+  --expense-dim:      rgba(248,113,113,0.12);
+  --accent:           #10b981;   /* emerald for interactive elements */
+  --accent-text:      #000000;   /* text on accent bg */
+
+  /* Pill (filter tabs) */
+  --pill-active-bg:   #10b981;
   --pill-active-text: #000000;
   --pill-bg:          #0c0c0c;
   --pill-text:        #888888;
+
   --skeleton:         rgba(255,255,255,0.05);
   --tooltip-bg:       #111111;
   --nav-h:            60px;
@@ -30,12 +39,21 @@
   --text:             #000000;
   --text-2:           #888888;
   --text-3:           #e0e0e0;
-  --income:           #000000;
-  --expense:          #aaaaaa;
-  --pill-active-bg:   #000000;
+
+  /* Accent — Emerald + Soft Red */
+  --income:           #059669;   /* deeper emerald for light bg */
+  --income-dim:       rgba(5,150,105,0.10);
+  --expense:          #ef4444;   /* red for light bg */
+  --expense-dim:      rgba(239,68,68,0.10);
+  --accent:           #059669;
+  --accent-text:      #ffffff;
+
+  /* Pill */
+  --pill-active-bg:   #059669;
   --pill-active-text: #ffffff;
   --pill-bg:          #ffffff;
   --pill-text:        #888888;
+
   --skeleton:         rgba(0,0,0,0.06);
   --tooltip-bg:       #ffffff;
   --nav-h:            60px;
@@ -44,10 +62,7 @@
 /* ── Base reset ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-html {
-  height: 100%;
-  /* Telegram sets viewport meta — honour it */
-}
+html { height: 100%; }
 
 body {
   background: var(--bg);
@@ -56,13 +71,12 @@ body {
   -webkit-font-smoothing: antialiased;
   overscroll-behavior: none;
   min-height: 100%;
-  /* space for BottomNav + device home indicator */
   padding-bottom: calc(var(--nav-h) + env(safe-area-inset-bottom, 0px));
   transition: background 0.15s ease, color 0.15s ease;
 }
 
 ::-webkit-scrollbar { width: 0; }
-::selection { background: var(--text); color: var(--bg); }
+::selection { background: var(--accent); color: var(--accent-text); }
 * { -webkit-tap-highlight-color: transparent; }
 
 /* ── Skeleton shimmer ── */
