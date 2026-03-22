@@ -1,11 +1,11 @@
 // app/api/summary/route.ts
 // API Route: Ringkasan keuangan bulanan per user
-// Diproteksi dengan validasi Telegram initData
+// Dual-auth: support Telegram initData (Mini App) + JWT cookie (browser)
 
 export const dynamic = "force-dynamic";
 
 import { NextRequest, NextResponse } from "next/server";
-import { validateInitData } from "@/lib/validate-init-data";
+import { getUserFromRequest } from "@/lib/get-user";
 import { getSupabase } from "@/lib/supabase";
 import { CategorySummary, MonthlySummary } from "@/lib/types";
 
@@ -15,18 +15,14 @@ const MONTH_NAMES = [
 ];
 
 export async function POST(req: NextRequest) {
-  const body = await req.json().catch(() => null);
-  if (!body?.initData) {
-    return NextResponse.json({ error: "initData dibutuhkan" }, { status: 400 });
+  const body = await req.json().catch(() => ({}));
+
+  const user = await getUserFromRequest(req, body);
+  if (!user) {
+    return NextResponse.json({ error: "Tidak terautentikasi" }, { status: 401 });
   }
 
-  // Validasi identitas user
-  const validated = validateInitData(body.initData, process.env.BOT_TOKEN!);
-  if (!validated) {
-    return NextResponse.json({ error: "initData tidak valid" }, { status: 401 });
-  }
-
-  const telegramId = validated.user.id;
+  const telegramId = user.id;
   const now = new Date();
   const year: number = body.year ?? now.getFullYear();
   const month: number = body.month ?? now.getMonth() + 1;
