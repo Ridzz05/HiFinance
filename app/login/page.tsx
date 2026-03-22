@@ -1,38 +1,49 @@
-// app/login/page.tsx
-// Halaman login untuk akses via browser — menggunakan Telegram Login Widget
+"use client";
+// app/login/page.tsx — Client Component
+// Form login/register dengan Username, Email, Password
+// Mode dummy: accept any credentials, buat session, redirect ke dashboard
 
-import type { Metadata } from "next";
-import { redirect } from "next/navigation";
-import { getServerSession } from "@/lib/auth";
-import LoginWidget from "./LoginWidget";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
-export const metadata: Metadata = {
-  title: "Login — HiFinance",
-  description: "Masuk ke HiFinance dengan akun Telegram kamu",
-};
+type Mode = "login" | "register";
 
-export default async function LoginPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ error?: string; redirect?: string }>;
-}) {
-  // Kalau sudah login, langsung redirect ke dashboard
-  const session = await getServerSession();
-  if (session) redirect("/");
+export default function LoginPage() {
+  const router = useRouter();
+  const [mode, setMode] = useState<Mode>("login");
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const params = await searchParams;
-  const error = params?.error;
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
 
-  // URL bot name diambil dari env (tanpa @)
-  const botName = process.env.NEXT_PUBLIC_BOT_USERNAME ?? "hifinance_bot";
-  // Callback URL ke API route kita
-  const callbackUrl = `${process.env.NEXT_PUBLIC_APP_URL ?? ""}/api/auth/telegram`;
+    try {
+      const res = await fetch("/api/auth/dummy-login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, email, password }),
+      });
 
-  const errorMessages: Record<string, string> = {
-    missing_params: "Data login tidak lengkap. Coba lagi.",
-    invalid_auth: "Verifikasi Telegram gagal. Coba lagi.",
-    db_error: "Gagal menyimpan data. Coba beberapa saat lagi.",
-  };
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error ?? "Terjadi kesalahan, coba lagi.");
+        return;
+      }
+
+      router.push("/");
+      router.refresh();
+    } catch {
+      setError("Tidak bisa terhubung ke server.");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <div
@@ -43,52 +54,44 @@ export default async function LoginPage({
         alignItems: "center",
         justifyContent: "center",
         padding: "2rem 1.5rem",
-        gap: "2rem",
+        gap: "1.5rem",
         background: "var(--bg)",
       }}
     >
-      {/* Logo & Branding */}
-      <div style={{ textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", gap: "1rem" }}>
+      {/* Branding */}
+      <div style={{ textAlign: "center" }}>
         <div
           style={{
-            width: 72,
-            height: 72,
+            width: 64,
+            height: 64,
             borderRadius: "50%",
             background: "var(--accent)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            fontSize: 36,
+            fontSize: 30,
+            margin: "0 auto 0.75rem",
           }}
         >
           💰
         </div>
         <h1
           style={{
-            fontSize: "2rem",
+            fontSize: "1.8rem",
             fontWeight: 800,
             letterSpacing: "-0.04em",
-            margin: 0,
+            margin: "0 0 0.3rem",
             color: "var(--text)",
           }}
         >
           HiFinance
         </h1>
-        <p
-          style={{
-            color: "var(--text-muted)",
-            margin: 0,
-            fontSize: "0.95rem",
-            maxWidth: 260,
-            textAlign: "center",
-            lineHeight: 1.5,
-          }}
-        >
-          Pantau keuangan kamu dengan cerdas, langsung dari Telegram.
+        <p style={{ color: "var(--text-muted)", margin: 0, fontSize: "0.88rem" }}>
+          Pantau keuangan kamu dengan cerdas
         </p>
       </div>
 
-      {/* Card login */}
+      {/* Card */}
       <div
         style={{
           width: "100%",
@@ -96,68 +99,155 @@ export default async function LoginPage({
           background: "var(--card)",
           borderRadius: 16,
           border: "1px solid var(--border)",
-          padding: "2rem 1.5rem",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: "1.5rem",
+          overflow: "hidden",
         }}
       >
-        <div style={{ textAlign: "center" }}>
-          <h2
-            style={{
-              fontSize: "1.1rem",
-              fontWeight: 700,
-              margin: "0 0 0.4rem",
-              color: "var(--text)",
-            }}
-          >
-            Masuk ke akunmu
-          </h2>
-          <p style={{ fontSize: "0.85rem", color: "var(--text-muted)", margin: 0 }}>
-            Gunakan akun Telegram kamu untuk masuk
-          </p>
+        {/* Tab toggle */}
+        <div style={{ display: "flex", borderBottom: "1px solid var(--border)" }}>
+          {(["login", "register"] as Mode[]).map((tab) => (
+            <button
+              key={tab}
+              onClick={() => { setMode(tab); setError(""); }}
+              style={{
+                flex: 1,
+                padding: "0.85rem",
+                background: "transparent",
+                border: "none",
+                cursor: "pointer",
+                fontWeight: mode === tab ? 700 : 400,
+                color: mode === tab ? "var(--accent)" : "var(--text-muted)",
+                borderBottom: mode === tab ? "2px solid var(--accent)" : "2px solid transparent",
+                fontSize: "0.9rem",
+                transition: "all 0.15s ease",
+                marginBottom: -1,
+              }}
+            >
+              {tab === "login" ? "Masuk" : "Daftar"}
+            </button>
+          ))}
         </div>
 
-        {/* Error message */}
-        {error && (
-          <div
-            style={{
-              width: "100%",
-              padding: "0.75rem 1rem",
-              borderRadius: 8,
-              background: "rgba(255,80,80,0.08)",
-              border: "1px solid rgba(255,80,80,0.25)",
-              color: "#ff6b6b",
-              fontSize: "0.85rem",
-              textAlign: "center",
-            }}
-          >
-            {errorMessages[error] ?? "Terjadi kesalahan. Coba lagi."}
+        {/* Form */}
+        <form onSubmit={handleSubmit} style={{ padding: "1.5rem", display: "flex", flexDirection: "column", gap: "0.85rem" }}>
+          {mode === "register" && (
+            <div>
+              <label style={{ fontSize: "0.8rem", color: "var(--text-muted)", display: "block", marginBottom: "0.35rem" }}>
+                Username
+              </label>
+              <input
+                type="text"
+                placeholder="ridzzdev"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                style={{
+                  width: "100%",
+                  padding: "0.65rem 0.85rem",
+                  borderRadius: 8,
+                  border: "1px solid var(--border)",
+                  background: "var(--bg)",
+                  color: "var(--text)",
+                  fontSize: "0.9rem",
+                  outline: "none",
+                  boxSizing: "border-box",
+                }}
+              />
+            </div>
+          )}
+
+          <div>
+            <label style={{ fontSize: "0.8rem", color: "var(--text-muted)", display: "block", marginBottom: "0.35rem" }}>
+              Email
+            </label>
+            <input
+              type="email"
+              placeholder="kamu@email.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              style={{
+                width: "100%",
+                padding: "0.65rem 0.85rem",
+                borderRadius: 8,
+                border: "1px solid var(--border)",
+                background: "var(--bg)",
+                color: "var(--text)",
+                fontSize: "0.9rem",
+                outline: "none",
+                boxSizing: "border-box",
+              }}
+            />
           </div>
-        )}
 
-        {/* Telegram Login Widget — Client Component agar script bisa execute */}
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "1rem", width: "100%" }}>
-          <LoginWidget botName={botName} callbackUrl={callbackUrl} />
-        </div>
+          <div>
+            <label style={{ fontSize: "0.8rem", color: "var(--text-muted)", display: "block", marginBottom: "0.35rem" }}>
+              Password
+            </label>
+            <input
+              type="password"
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              style={{
+                width: "100%",
+                padding: "0.65rem 0.85rem",
+                borderRadius: 8,
+                border: "1px solid var(--border)",
+                background: "var(--bg)",
+                color: "var(--text)",
+                fontSize: "0.9rem",
+                outline: "none",
+                boxSizing: "border-box",
+              }}
+            />
+          </div>
 
-        <div style={{ borderTop: "1px solid var(--border)", width: "100%", paddingTop: "1rem" }}>
-          <p style={{ fontSize: "0.78rem", color: "var(--text-muted)", textAlign: "center", margin: 0, lineHeight: 1.6 }}>
-            Dengan masuk, kamu setuju dengan{" "}
-            <span style={{ color: "var(--accent)" }}>Syarat Layanan</span>{" "}
-            HiFinance. Data kamu aman dan tidak dibagikan ke pihak ketiga.
-          </p>
-        </div>
+          {/* Error */}
+          {error && (
+            <div
+              style={{
+                padding: "0.6rem 0.85rem",
+                borderRadius: 8,
+                background: "rgba(255,80,80,0.08)",
+                border: "1px solid rgba(255,80,80,0.2)",
+                color: "#ff6b6b",
+                fontSize: "0.82rem",
+              }}
+            >
+              {error}
+            </div>
+          )}
+
+          {/* Submit */}
+          <button
+            type="submit"
+            disabled={loading}
+            style={{
+              padding: "0.75rem",
+              borderRadius: 8,
+              background: loading ? "var(--border)" : "var(--accent)",
+              color: "white",
+              border: "none",
+              fontWeight: 700,
+              fontSize: "0.92rem",
+              cursor: loading ? "not-allowed" : "pointer",
+              transition: "opacity 0.15s",
+              opacity: loading ? 0.7 : 1,
+              marginTop: "0.25rem",
+            }}
+          >
+            {loading ? "⏳ Sedang memproses..." : mode === "login" ? "Masuk →" : "Buat Akun →"}
+          </button>
+        </form>
       </div>
 
-      {/* CTA untuk yang belum punya akun */}
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
-        <p style={{ fontSize: "0.83rem", color: "var(--text-muted)", textAlign: "center", margin: 0 }}>
-          Belum pernah pakai HiFinance?
+      {/* CTA Telegram */}
+      <div style={{ textAlign: "center" }}>
+        <p style={{ fontSize: "0.8rem", color: "var(--text-muted)", margin: "0 0 0.5rem" }}>
+          Atau mulai langsung di Telegram
         </p>
         <a
-          href={`https://t.me/${botName}`}
+          href="https://t.me/hifinance_bot"
           target="_blank"
           rel="noopener noreferrer"
           style={{
@@ -168,17 +258,15 @@ export default async function LoginPage({
             background: "#2AABEE",
             textDecoration: "none",
             fontWeight: 600,
-            fontSize: "0.88rem",
-            padding: "0.5rem 1.25rem",
+            fontSize: "0.85rem",
+            padding: "0.45rem 1rem",
             borderRadius: 8,
-            cursor: "pointer",
           }}
         >
-          {/* Telegram icon */}
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.248-1.97 9.289c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L8.32 14.617l-2.96-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.496.969z"/>
           </svg>
-          Mulai di Telegram
+          Buka di Telegram
         </a>
       </div>
     </div>
