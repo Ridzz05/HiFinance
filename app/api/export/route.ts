@@ -1,11 +1,11 @@
 // app/api/export/route.ts
 // Server-side Excel export — generate XLSX lalu kirim ke user via Telegram Bot
-// Tidak ada file download di browser, file langsung dikirim ke chat Telegram user
+// Dual-auth: support Telegram initData (Mini App) + JWT cookie (browser)
 
 export const dynamic = "force-dynamic";
 
 import { NextRequest, NextResponse } from "next/server";
-import { validateInitData } from "@/lib/validate-init-data";
+import { getUserFromRequest } from "@/lib/get-user";
 import { getSupabase } from "@/lib/supabase";
 
 const MONTH_NAMES = [
@@ -20,19 +20,15 @@ function fmtIDR(n: number) {
 }
 
 export async function POST(req: NextRequest) {
-  const body = await req.json().catch(() => null);
-  if (!body?.initData) {
-    return NextResponse.json({ error: "initData dibutuhkan" }, { status: 400 });
+  const body = await req.json().catch(() => ({}));
+
+  const user = await getUserFromRequest(req, body);
+  if (!user) {
+    return NextResponse.json({ error: "Tidak terautentikasi" }, { status: 401 });
   }
 
-  // 1. Validasi user
-  const validated = validateInitData(body.initData, process.env.BOT_TOKEN!);
-  if (!validated) {
-    return NextResponse.json({ error: "initData tidak valid" }, { status: 401 });
-  }
-
-  const userId = validated.user.id;
-  const firstName = validated.user.first_name ?? "User";
+  const userId = user.id;
+  const firstName = user.first_name ?? "User";
 
   // 2. Ambil semua transaksi user (max 1000)
   const { data: transactions, error: txError } = await getSupabase()
