@@ -15,6 +15,11 @@ export default function ThemeToggle() {
   function toggle() {
     const next = dark ? "light" : "dark";
     document.documentElement.setAttribute("data-theme", next);
+    if (next === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
     localStorage.setItem("hf-theme", next);
     setDark(!dark);
   }

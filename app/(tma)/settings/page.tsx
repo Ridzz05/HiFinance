@@ -113,7 +113,7 @@ export default function SettingsPage() {
           </div>
 
           {message.text && (
-            <div className={`rounded-xl p-4 text-sm font-medium ${message.type === 'success' ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20' : 'bg-red-500/10 text-red-400 border border-red-500/20'}`}>
+            <div className={`rounded-xl p-4 text-sm font-medium ${message.type === 'success' ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20' : 'bg-yellow-400/10 text-yellow-400 border border-yellow-400/20'}`}>
               {message.text}
             </div>
           )}

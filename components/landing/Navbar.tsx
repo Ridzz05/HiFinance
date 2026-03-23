@@ -13,9 +13,9 @@ export default function Navbar() {
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
-      className="fixed top-0 left-0 right-0 z-50 px-4 py-3"
+      className="fixed top-0 w-full z-50 bg-[#0c0c0c]/80 backdrop-blur-md border-b border-white/10"
     >
-      <div className="mx-auto flex h-16 max-w-5xl items-center justify-between rounded-2xl border border-white/10 bg-black/40 px-5 backdrop-blur-md shadow-lg dark:bg-[#0c0c0c]/60 dark:border-white/10 bg-white/60 dark:text-white text-black transition-colors">
+      <div className="flex h-16 w-full max-w-7xl mx-auto items-center justify-between px-6 transition-colors">
         {/* Left: Logo & Title */}
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-400 to-blue-600 shadow-inner">
@@ -30,18 +30,18 @@ export default function Navbar() {
         </div>
 
         {/* Right: Actions */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-6">
           <ThemeToggle />
           <Link
             href="https://t.me/hifinance_bot"
             target="_blank"
             rel="noopener noreferrer"
-            className="group relative inline-flex items-center justify-center overflow-hidden rounded-full bg-cyan-500 px-5 py-2 font-medium text-white shadow-lg transition duration-300 ease-out hover:scale-105 hover:bg-cyan-400"
+            className="group relative inline-flex items-center justify-center overflow-hidden rounded-full bg-gradient-to-r from-[#00FFFF] to-slate-900 px-6 py-2.5 font-bold text-white shadow-xl transition-all duration-300 hover:scale-105"
           >
-            <span className="absolute inset-0 h-full w-full bg-gradient-to-br from-blue-600 via-cyan-500 to-teal-400 opacity-0 transition duration-300 ease-out group-hover:opacity-100"></span>
-            <span className="relative flex items-center gap-2 text-sm font-semibold">
+            <span className="absolute inset-0 h-full w-full bg-gradient-to-r from-[#00FFFF] via-cyan-400 to-slate-800 opacity-0 transition duration-300 ease-out group-hover:opacity-100"></span>
+            <span className="relative flex items-center gap-2 text-sm tracking-wide">
               Buka Bot
-              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <svg className="h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M5 12h14M12 5l7 7-7 7" />
               </svg>
             </span>

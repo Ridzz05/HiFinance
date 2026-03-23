@@ -25,37 +25,37 @@ const faqs = [
 
 export default function FAQ() {
   return (
-    <section className="py-24 w-full bg-slate-50 dark:bg-black transition-colors">
-      <div className="mx-auto max-w-3xl px-6 lg:px-8">
+    <section className="py-32 w-full bg-[#0c0c0c] relative z-10">
+      <div className="mx-auto max-w-4xl px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-12"
+          className="text-center mb-16"
         >
-          <h2 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-4xl">
-            Pertanyaan yang Sering Diajukan
+          <h2 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl">
+            Pertanyaan yang Sering <span className="text-[#00FFFF]">Diajukan</span>
           </h2>
-          <p className="mt-4 text-lg text-slate-600 dark:text-slate-400">
+          <p className="mt-6 text-xl text-slate-400">
             Ada yang masih bingung? Cari tahu jawabannya di bawah.
           </p>
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
+          initial={{ opacity: 0, scale: 0.98 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="rounded-3xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0c0c0c] p-6 sm:p-10 shadow-sm"
+          className="rounded-[2.5rem] border border-white/10 bg-white/5 backdrop-blur-xl p-8 sm:p-12 shadow-2xl"
         >
-          <Accordion type="single" collapsible className="w-full">
+          <Accordion type="single" collapsible className="w-full flex flex-col gap-8">
             {faqs.map((faq, i) => (
-              <AccordionItem key={i} value={`item-${i}`} className="border-b border-slate-200 dark:border-white/10 last:border-0">
-                <AccordionTrigger className="text-left text-[16px] font-semibold text-slate-900 dark:text-white hover:no-underline hover:text-cyan-600">
+              <AccordionItem key={i} value={`item-${i}`} className="border-b border-white/10 pb-4 last:border-0 last:pb-0">
+                <AccordionTrigger className="text-left text-lg font-semibold text-white hover:no-underline hover:text-[#00FFFF] transition-colors">
                   {faq.question}
                 </AccordionTrigger>
-                <AccordionContent className="text-[15px] leading-relaxed text-slate-600 dark:text-slate-400">
+                <AccordionContent className="text-base leading-relaxed text-slate-400 mt-2">
                   {faq.answer}
                 </AccordionContent>
               </AccordionItem>

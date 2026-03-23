@@ -1,24 +1,34 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { AreaChart, Area, ResponsiveContainer, Tooltip } from "recharts";
+import DashboardUI from "@/components/DashboardUI";
 
-const MOCK_DATA = [
-  { name: "Mon", balance: 4000 },
-  { name: "Tue", balance: 3000 },
-  { name: "Wed", balance: 5000 },
-  { name: "Thu", balance: 4500 },
-  { name: "Fri", balance: 6000 },
-  { name: "Sat", balance: 5500 },
-  { name: "Sun", balance: 7500 },
+const MOCK_SUMMARY = {
+  period: { year: 2026, month: 3, label: "Bulan Ini" },
+  total_income: 12500000,
+  total_expense: 4300000,
+  balance: 8200000,
+  transaction_count: 24,
+  budget_limit: 8000000,
+  expense_by_category: [
+    { category: "Makanan", amount: 1500000, percentage: 34.8 },
+    { category: "Transport", amount: 800000, percentage: 18.6 },
+    { category: "Rumah", amount: 2000000, percentage: 46.5 }
+  ]
+};
+
+const MOCK_TXS = [
+  { id: "1", type: "expense" as const, amount: 65000, category: "Makanan", note: "Makan siang yoshinoya", created_at: "2026-03-24T12:30:00.000Z" },
+  { id: "2", type: "income" as const, amount: 5000000, category: "Gaji", note: "Bonus project", created_at: "2026-03-23T09:00:00.000Z" },
+  { id: "3", type: "expense" as const, amount: 150000, category: "Transport", note: "GoRide mingguan", created_at: "2026-03-22T17:45:00.000Z" },
 ];
 
 export default function Hero() {
   return (
     <section className="relative min-h-[90vh] w-full overflow-hidden pt-32 pb-16 flex items-center">
       {/* Background Gradients */}
-      <div className="absolute top-[-10%] left-[-10%] h-[500px] w-[500px] rounded-full bg-cyan-500/20 blur-[120px]" />
-      <div className="absolute bottom-[-10%] right-[-10%] h-[500px] w-[500px] rounded-full bg-blue-600/20 blur-[120px]" />
+      <div className="absolute top-[-10%] left-[-10%] h-[600px] w-[600px] rounded-full bg-[#00FFFF]/20 blur-[150px] pointer-events-none" />
+      <div className="absolute bottom-[-10%] right-[-10%] h-[600px] w-[600px] rounded-full bg-[#00FFFF]/10 blur-[150px] pointer-events-none" />
 
       <div className="mx-auto max-w-7xl px-6 lg:px-8 w-full">
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-8 items-center">
@@ -43,7 +53,7 @@ export default function Hero() {
 
             <h1 className="text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-6xl lg:text-7xl leading-[1.1]">
               Urus Keuangan <br />
-              <span className="bg-gradient-to-r from-cyan-400 to-blue-600 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-[#00FFFF] to-blue-600 bg-clip-text text-transparent">
                 Semudah Balas Chat.
               </span>
             </h1>
@@ -72,43 +82,29 @@ export default function Hero() {
             transition={{ duration: 0.8, delay: 0.2, type: "spring" }}
             className="perspective-1000 relative mx-auto w-full max-w-md lg:max-w-none lg:ml-auto"
           >
-            {/* Phone Mockup Frame */}
-            <div className="relative z-10 overflow-hidden rounded-[2.5rem] border-[8px] border-slate-200 dark:border-slate-800 bg-[#0c0c0c] shadow-2xl shadow-cyan-500/20 aspect-[9/18] w-full max-w-[320px] mx-auto flex flex-col pt-8">
-              {/* Fake notch */}
-              <div className="absolute top-0 left-1/2 h-6 w-32 -translate-x-1/2 rounded-b-2xl bg-slate-200 dark:bg-slate-800" />
+            {/* Highly Realistic 3D Phone Mockup Frame */}
+            <div className="relative z-10 mx-auto flex w-full max-w-[340px] flex-col overflow-visible rounded-[3rem] bg-gradient-to-b from-slate-200 to-slate-400 p-[3px] shadow-[0_0_80px_rgba(0,255,255,0.15)] dark:from-slate-700 dark:to-slate-900 border border-white/10 aspect-[9/19]">
               
-              <div className="px-5 pb-4 text-white">
-                <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-widest text-center">HiFinance Mini App</p>
-                <h3 className="text-2xl font-bold mt-2">Rp 12,450,000</h3>
-                <p className="text-xs text-cyan-400 font-medium">+Rp 2.5jt bulan ini</p>
-              </div>
+              {/* Outer Volume/Power Buttons */}
+              <div className="absolute -left-1.5 top-32 h-14 w-1.5 rounded-l border border-slate-600 bg-slate-800"></div>
+              <div className="absolute -left-1.5 top-52 h-14 w-1.5 rounded-l border border-slate-600 bg-slate-800"></div>
+              <div className="absolute -right-1.5 top-40 h-20 w-1.5 rounded-r border border-slate-600 bg-slate-800"></div>
 
-              {/* Chart Visualization */}
-              <div className="h-48 w-full mt-4">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={MOCK_DATA} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
-                    <defs>
-                      <linearGradient id="colorBalance" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.3}/>
-                        <stop offset="95%" stopColor="#06b6d4" stopOpacity={0}/>
-                      </linearGradient>
-                    </defs>
-                    <Tooltip 
-                      contentStyle={{ background: '#111', border: 'none', borderRadius: 8, fontSize: 12, color: '#fff' }}
-                      itemStyle={{ color: '#06b6d4' }}
-                    />
-                    <Area type="monotone" dataKey="balance" stroke="#06b6d4" strokeWidth={3} fillOpacity={1} fill="url(#colorBalance)" />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
-
-              {/* Fake chat bubbles */}
-              <div className="flex-1 bg-black/40 p-4 flex flex-col gap-3 justify-end rounded-t-3xl border-t border-white/5 backdrop-blur-sm relative z-20">
-                <div className="self-end rounded-2xl rounded-tr-sm bg-cyan-600 px-4 py-2 max-w-[85%]">
-                  <p className="text-sm text-white">Makan siang yoshinoya 65rb</p>
+              {/* Inner bezel and screen area */}
+              <div className="relative flex-1 overflow-hidden rounded-[2.8rem] bg-[#0c0c0c] shadow-inner flex flex-col pt-1">
+                
+                {/* Dynamic Notch / Sensors */}
+                <div className="absolute left-1/2 top-4 z-50 flex h-7 w-28 -translate-x-1/2 items-center justify-between rounded-full bg-black px-3 shadow-[0_1px_4px_rgba(255,255,255,0.1)] border border-white/5">
+                  <div className="h-3 w-3 rounded-full bg-slate-800 opacity-50"></div>
+                  <div className="h-3 w-3 rounded-full bg-[#00FFFF]/20 shadow-[0_0_8px_#00FFFF]"></div>
                 </div>
-                <div className="self-start rounded-2xl rounded-tl-sm bg-slate-800 px-4 py-2 max-w-[85%]">
-                  <p className="text-sm text-white">✅ Dicatat! <br/><span className="text-yellow-400">🍔 Makan & Minum: -Rp 65,000</span></p>
+
+                <div className="w-full h-full pt-12 pb-8 pointer-events-none relative flex flex-col">
+                  {/* True Dashboard Injection */}
+                  <DashboardUI mockData={{ summary: MOCK_SUMMARY, transactions: MOCK_TXS }} />
+
+                  {/* Fade overlay at bottom of phone */}
+                  <div className="absolute bottom-0 left-0 right-0 h-28 bg-gradient-to-t from-[#0c0c0c] via-[#0c0c0c]/80 to-transparent z-10" />
                 </div>
               </div>
             </div>

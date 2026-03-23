@@ -3,6 +3,7 @@
 
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import { CategorySummary } from "@/lib/types";
+import { useState, useEffect } from "react";
 
 // Aqua Blue-to-gray palette for chart slices
 const DARK_COLORS  = ["#06b6d4", "#0891b2", "#0e7490", "#aaaaaa", "#666666", "#444444"];
@@ -14,13 +15,22 @@ const fmtShort = (n: number) => {
   return `Rp ${n}`;
 };
 
-function getColors() {
-  if (typeof document === "undefined") return DARK_COLORS;
-  return document.documentElement.getAttribute("data-theme") === "light" ? LIGHT_COLORS : DARK_COLORS;
-}
-
 export default function CategoryChart({ data }: { data: CategorySummary[] }) {
-  const colors = getColors();
+  const [colors, setColors] = useState<string[]>(DARK_COLORS);
+
+  useEffect(() => {
+    // Sync colors after hydration to avoid SSR mismatch
+    const syncTheme = () => {
+      const isLight = document.documentElement.getAttribute("data-theme") === "light";
+      setColors(isLight ? LIGHT_COLORS : DARK_COLORS);
+    };
+    
+    syncTheme();
+    
+    const observer = new MutationObserver(syncTheme);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+    return () => observer.disconnect();
+  }, []);
 
   if (!data.length) {
     return (
