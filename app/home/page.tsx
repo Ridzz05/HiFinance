@@ -288,8 +288,8 @@ function Hero() {
 /* ─────────────────────────────── FEATURES (BENTO) ────────────────────────── */
 function Features() {
   return (
-    <section id="features" className="py-32 w-full bg-slate-950 relative z-10">
-      <div className="pointer-events-none absolute inset-0 bg-linear-to-b from-transparent via-slate-900/10 to-transparent" />
+    <section id="features" className="py-32 w-full relative z-10">
+      <div className="pointer-events-none absolute inset-0 bg-linear-to-b from-transparent via-slate-900/5 to-transparent" />
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <AnimatedSection className="text-center mb-20 max-w-2xl mx-auto">
           <h2 className="text-4xl font-extrabold tracking-tight text-slate-50 sm:text-5xl">
@@ -331,7 +331,7 @@ function Features() {
 /* ─────────────────────────────── FAQ ──────────────────────────────────────── */
 function FAQSection() {
   return (
-    <section className="py-32 w-full bg-slate-950 relative z-10">
+    <section className="py-32 w-full relative z-10">
       <div className="mx-auto max-w-3xl px-6 lg:px-8">
         <AnimatedSection className="text-center mb-16">
           <h2 className="text-4xl font-extrabold tracking-tight text-slate-50 sm:text-5xl">
@@ -369,7 +369,7 @@ function FAQSection() {
 /* ─────────────────────────────── FINAL CTA ────────────────────────────────── */
 function FinalCTA() {
   return (
-    <section className="relative py-28 w-full bg-slate-950 overflow-hidden z-10">
+    <section className="relative py-28 w-full overflow-hidden z-10">
       {/* Background glow for CTA */}
       <div className="absolute inset-0 bg-linear-to-b from-transparent to-aqua/20" />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl h-[400px] bg-aqua/10 rounded-full blur-[120px] pointer-events-none" />
@@ -404,7 +404,7 @@ function FinalCTA() {
 /* ─────────────────────────────── FOOTER ──────────────────────────────────── */
 function Footer() {
   return (
-    <footer className="border-t border-white/10 bg-slate-950 py-12">
+    <footer className="border-t border-white/10 py-12 relative z-10">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
           <div className="flex items-center gap-3">
@@ -434,8 +434,8 @@ export default function LandingPage() {
     <div className="relative min-h-screen bg-slate-950 text-slate-50 font-sans antialiased selection:bg-aqua/30 overflow-hidden">
       {/* ── Ambient Background Layer ── */}
       <div className="pointer-events-none fixed inset-0 z-0 flex items-center justify-center">
-        {/* Grid Overlay with fade out at bottom */}
-        <div className="absolute inset-0 bg-grid-pattern [mask-image:linear-gradient(to_bottom,white_20%,transparent_90%)]" />
+        {/* Grid Overlay */}
+        <div className="absolute inset-0 bg-grid-pattern opacity-50" />
         
         {/* Animated Ambient Orbs */}
         <div className="absolute top-[-20%] left-[-10%] h-[700px] w-[700px] rounded-full bg-aqua/10 blur-[160px] animate__float" />
