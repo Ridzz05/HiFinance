@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 
 const ITEMS = [
   {
-    href: "/dashboard",
+    href: "/",
     label: "Overview",
     icon: (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -32,32 +32,28 @@ const ITEMS = [
 
 export default function BottomNav() {
   const path = usePathname();
+  
   return (
-    <nav style={{
-      position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 50,
-      background: "var(--bg)", borderTop: "1px solid var(--border-hi)",
-      paddingBottom: "env(safe-area-inset-bottom, 0px)",
-    }}>
-      <div style={{ display: "flex", maxWidth: 390, margin: "0 auto", height: "var(--nav-h)" }}>
+    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t border-border pb-[env(safe-area-inset-bottom,0px)]">
+      <div className="flex max-w-[390px] mx-auto h-[70px] px-4 items-center justify-around">
         {ITEMS.map(({ href, label, icon }) => {
           const active = path === href;
           return (
-            <Link key={href} href={href} style={{
-              flex: 1, display: "flex", flexDirection: "column",
-              alignItems: "center", justifyContent: "center", gap: 4,
-              color: active ? "var(--accent)" : "var(--text-2)",
-              position: "relative", textDecoration: "none",
-            }}>
-              {icon}
-              <span style={{ fontSize: 9, letterSpacing: "0.15em", textTransform: "uppercase", fontWeight: 600 }}>
+            <Link 
+              key={href} 
+              href={href} 
+              className={`flex-1 flex flex-col items-center justify-center gap-1.5 py-2 mx-1 rounded-2xl transition-all duration-300 ${
+                active 
+                  ? "bg-secondary text-[#00E5FF] border border-[#00E5FF]/30 shadow-sm shadow-[#00E5FF]/10 scale-105" 
+                  : "text-muted-foreground border border-transparent hover:bg-secondary/30 hover:text-foreground"
+              }`}
+            >
+              <div className={`${active ? "opacity-100" : "opacity-70"}`}>
+                {icon}
+              </div>
+              <span className={`text-[10px] tracking-widest uppercase font-bold ${active ? "text-foreground" : ""}`}>
                 {label}
               </span>
-              {active && (
-                <span style={{
-                  position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)",
-                  width: 28, height: 2, background: "var(--accent)", borderRadius: 2,
-                }} />
-              )}
             </Link>
           );
         })}

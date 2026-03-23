@@ -1,5 +1,4 @@
 "use client";
-// app/page.tsx — Dashboard
 
 import { useEffect, useState } from "react";
 import BalanceCard from "@/components/BalanceCard";
