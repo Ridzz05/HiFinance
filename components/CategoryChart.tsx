@@ -4,9 +4,9 @@
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import { CategorySummary } from "@/lib/types";
 
-// Emerald-to-gray palette for chart slices
-const DARK_COLORS  = ["#10b981", "#059669", "#aaaaaa", "#666666", "#444444", "#222222"];
-const LIGHT_COLORS = ["#059669", "#10b981", "#888888", "#aaaaaa", "#cccccc", "#e0e0e0"];
+// Aqua Blue-to-gray palette for chart slices
+const DARK_COLORS  = ["#06b6d4", "#0891b2", "#0e7490", "#aaaaaa", "#666666", "#444444"];
+const LIGHT_COLORS = ["#0891b2", "#06b6d4", "#22d3ee", "#888888", "#aaaaaa", "#cccccc"];
 
 const fmtShort = (n: number) => {
   if (n >= 1_000_000) return `Rp ${(n / 1_000_000).toFixed(1)}jt`;

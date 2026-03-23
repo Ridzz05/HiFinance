@@ -71,8 +71,8 @@ export default function BottomNav() {
                 textDecoration: "none",
                 transition: "all 0.2s ease",
                 position: "relative",
-                background: active ? "rgba(16,185,129,0.08)" : "transparent",
-                border: active ? "1px solid rgba(16,185,129,0.2)" : "1px solid transparent",
+                background: active ? "rgba(6,182,212,0.08)" : "transparent",
+                border: active ? "1px solid rgba(6,182,212,0.2)" : "1px solid transparent",
                 color: active ? "var(--income)" : "var(--text-2)",
               }}
             >
