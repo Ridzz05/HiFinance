@@ -29,4 +29,5 @@ export interface MonthlySummary {
   balance: number;
   expense_by_category: CategorySummary[];
   transaction_count: number;
+  budget_limit?: number;
 }

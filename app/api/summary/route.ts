@@ -42,6 +42,14 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
+  const { data: userSettings } = await getSupabase()
+    .from("user_settings")
+    .select("budget_limit")
+    .eq("user_id", telegramId)
+    .single();
+
+  const budget_limit = userSettings?.budget_limit || 0;
+
   type TxRow = { type: string; amount: number; category: string; note: string; created_at: string };
   const rows: TxRow[] = transactions ?? [];
   const totalIncome = rows.filter(t => t.type === "income").reduce((s, t) => s + t.amount, 0);
@@ -66,6 +74,7 @@ export async function POST(req: NextRequest) {
     balance: totalIncome - totalExpense,
     expense_by_category: expenseByCategory,
     transaction_count: rows.length,
+    budget_limit,
   };
 
   return NextResponse.json(summary);
