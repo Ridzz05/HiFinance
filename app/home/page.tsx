@@ -174,9 +174,7 @@ function Navbar() {
 function Hero() {
   return (
     <section className="relative min-h-screen w-full overflow-x-hidden pt-28 pb-20 flex items-center">
-      {/* Aurora blobs */}
-      <div className="pointer-events-none absolute -top-40 -left-40 h-[700px] w-[700px] rounded-full bg-aqua/10 blur-[160px]" />
-      <div className="pointer-events-none absolute -bottom-40 -right-40 h-[600px] w-[600px] rounded-full bg-aqua/8 blur-[140px]" />
+      {/* Aurora blobs removed (now handled globally in LandingPage background) */}
 
       <div className="mx-auto max-w-7xl px-6 lg:px-8 w-full">
         <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
@@ -193,14 +191,14 @@ function Hero() {
             </div>
 
             <h1 className="text-5xl font-extrabold tracking-tight text-slate-50 sm:text-6xl lg:text-7xl leading-[1.1]">
-              Asisten Keuangan<br />
+              Catat Keuangan<br />
               <span className="text-aqua">
-                Cerdas Berbasis AI.
+                Semudah Chatting.
               </span>
             </h1>
 
             <p className="mt-6 max-w-lg text-lg leading-relaxed text-slate-400">
-              Catat transaksi dengan bahasa natural, pindai struk belanja via OCR, dan pantau ringkasan bulanan langsung lewat Telegram.
+              Lupakan form aplikasi yang ribet. Cukup ketik "Makan 25rb" atau kirim foto struk belanja, dan biar kami yang menyusunnya rapi ke dalam dashboard Anda.
             </p>
 
             <div className="mt-10 flex flex-wrap items-center gap-4">
@@ -221,8 +219,8 @@ function Hero() {
             {/* Social proof */}
             <div className="mt-12 flex items-center gap-6">
               {[
-                { icon: Shield, label: "Data Terenkripsi" },
-                { icon: Zap,    label: "Respons Instan"   },
+                { icon: Shield, label: "Privasi Terjamin" },
+                { icon: Zap,    label: "Tanpa Install App Baru" },
               ].map(({ icon: Icon, label }) => (
                 <div key={label} className="flex items-center gap-2 text-xs text-slate-400">
                   <Icon className="h-4 w-4 text-aqua" />
@@ -291,7 +289,7 @@ function Hero() {
 function Features() {
   return (
     <section id="features" className="py-32 w-full bg-slate-950 relative z-10">
-      <div className="pointer-events-none absolute inset-0 bg-linear-to-b from-transparent via-slate-900/30 to-transparent" />
+      <div className="pointer-events-none absolute inset-0 bg-linear-to-b from-transparent via-slate-900/10 to-transparent" />
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <AnimatedSection className="text-center mb-20 max-w-2xl mx-auto">
           <h2 className="text-4xl font-extrabold tracking-tight text-slate-50 sm:text-5xl">
@@ -433,15 +431,29 @@ function Footer() {
 /* ─────────────────────────────── PAGE ─────────────────────────────────────── */
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-50 font-sans antialiased selection:bg-aqua/30">
-      <Navbar />
-      <main>
-        <Hero />
-        <Features />
-        <FAQSection />
-        <FinalCTA />
-      </main>
-      <Footer />
+    <div className="relative min-h-screen bg-slate-950 text-slate-50 font-sans antialiased selection:bg-aqua/30 overflow-hidden">
+      {/* ── Ambient Background Layer ── */}
+      <div className="pointer-events-none fixed inset-0 z-0 flex items-center justify-center">
+        {/* Grid Overlay with fade out at bottom */}
+        <div className="absolute inset-0 bg-grid-pattern [mask-image:linear-gradient(to_bottom,white_20%,transparent_90%)]" />
+        
+        {/* Animated Ambient Orbs */}
+        <div className="absolute top-[-20%] left-[-10%] h-[700px] w-[700px] rounded-full bg-aqua/10 blur-[160px] animate__float" />
+        <div className="absolute top-[40%] right-[-20%] h-[500px] w-[500px] rounded-full bg-aqua/10 blur-[140px] animate__float" style={{ animationDelay: '2s', animationDuration: '8s' }} />
+        <div className="absolute bottom-[-10%] left-[20%] h-[400px] w-[400px] rounded-full bg-yellow-400/5 blur-[120px] animate__float" style={{ animationDelay: '4s', animationDuration: '7s' }} />
+      </div>
+
+      {/* ── Foreground Content ── */}
+      <div className="relative z-10 w-full">
+        <Navbar />
+        <main>
+          <Hero />
+          <Features />
+          <FAQSection />
+          <FinalCTA />
+        </main>
+        <Footer />
+      </div>
     </div>
   );
 }

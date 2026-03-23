@@ -27,7 +27,7 @@
   --color-aqua-dim: rgba(0, 255, 255, 0.12);
   --color-yellow: #FFD700;
   --color-yellow-dim: rgba(255, 215, 0, 0.12);
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
 }
 
 /* ── 3. Body reset — completely independent of TMA globals ──── */
@@ -117,3 +117,12 @@ body {
   background: rgba(0, 255, 255, 0.25);
   color: #000;
 }
+
+/* ── 6. Background Grid Pattern ──────────────────────────────── */
+.bg-grid-pattern {
+  background-size: 40px 40px;
+  background-image: 
+    linear-gradient(to right, rgba(0, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 255, 255, 0.04) 1px, transparent 1px);
+}
+
