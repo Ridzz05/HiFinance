@@ -79,31 +79,40 @@ function ExportBanner({ onClick, loading }: { onClick: () => void; loading: bool
     <button
       onClick={onClick}
       disabled={loading}
-      className={`relative w-full overflow-hidden p-[16px_20px] rounded-2xl flex items-center justify-between border transition-all duration-300 ${
-        loading 
-          ? "opacity-60 cursor-not-allowed border-emerald-500/20 bg-slate-800/40" 
-          : "cursor-pointer border-emerald-500/30 bg-slate-900/60 hover:bg-slate-800/80 backdrop-blur-md shadow-[0_4px_20px_rgba(16,185,129,0.1)] hover:shadow-[0_4px_25px_rgba(16,185,129,0.2)]"
+      className={`relative w-full overflow-hidden p-[16px_20px] rounded-2xl flex items-center justify-between transition-all duration-300 ${
+        loading ? "opacity-60 cursor-not-allowed" : "cursor-pointer hover:shadow-lg"
       }`}
+      style={{
+        background: "var(--surface)",
+        border: "1px solid var(--border-hi)"
+      }}
     >
-      <div className="absolute inset-0 bg-linear-to-r from-emerald-500/5 to-transparent pointer-events-none" />
+      <div 
+        className="absolute inset-0 pointer-events-none" 
+        style={{ background: "linear-gradient(to right, var(--income-dim), transparent)" }} 
+      />
       <div className="text-left relative z-10">
-        <p className="text-[14px] font-bold text-white mb-1 flex items-center gap-2 tracking-tight">
+        <p className="text-[14px] font-bold mb-1 flex items-center gap-2 tracking-tight" style={{ color: "var(--text)" }}>
           Unduh Rekap Excel
-          <span className="px-1.5 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+          <span className="px-1.5 py-0.5 rounded text-[9px] font-black uppercase tracking-wider border" style={{ background: "var(--income-dim)", color: "var(--income)", borderColor: "color-mix(in srgb, var(--income) 30%, transparent)" }}>
             PRO
           </span>
         </p>
-        <p className="text-[11px] text-slate-400 leading-relaxed font-medium">
+        <p className="text-[11px] leading-relaxed font-medium" style={{ color: "var(--text-2)" }}>
           Ekspor semua transaksi bulanan ke format .xlsx
         </p>
       </div>
       <div className={`w-10 h-10 rounded-xl shrink-0 ml-4 flex items-center justify-center relative z-10 transition-transform duration-300 ${
-        loading 
-          ? "bg-slate-800 text-slate-400" 
-          : "bg-linear-to-br from-emerald-500 to-emerald-400 text-slate-900 shadow-[0_0_15px_rgba(16,185,129,0.3)] hover:scale-105"
-      }`}>
+        !loading && "hover:scale-105"
+      }`}
+      style={{
+        background: loading ? "var(--pill-bg)" : "var(--income)",
+        color: loading ? "var(--text-2)" : "var(--bg)",
+        boxShadow: loading ? "none" : "0 0 15px var(--income-dim)",
+        border: loading ? "1px solid var(--border-hi)" : "none"
+      }}>
         {loading ? (
-          <span className="w-4 h-4 rounded-full border-2 border-slate-500 border-t-transparent animate-spin inline-block" />
+          <span className="w-4 h-4 rounded-full border-2 border-t-transparent animate-spin inline-block" style={{ borderColor: "var(--text-2)", borderTopColor: "transparent" }} />
         ) : (
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>

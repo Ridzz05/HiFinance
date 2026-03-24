@@ -135,7 +135,8 @@ export async function POST(req: NextRequest) {
   }
 
   // ── Jalur 2: Telegram Mini App → kirim file ke chat user via Bot API ──
-  const botToken = process.env.BOT_TOKEN!;
+  const botToken = process.env.TELEGRAM_BOT_TOKEN || process.env.BOT_TOKEN;
+  if (!botToken) throw new Error("Bot token tidak ditemukan");
   const formData = new FormData();
   formData.append("chat_id", String(userId));
   formData.append(

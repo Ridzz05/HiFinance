@@ -23,7 +23,8 @@ export async function getUserFromRequest(
 ): Promise<AuthUser | null> {
   const initData = body?.initData as string | undefined;
   if (initData) {
-    const validated = validateInitData(initData, process.env.BOT_TOKEN || "");
+    const token = process.env.TELEGRAM_BOT_TOKEN || process.env.BOT_TOKEN || "";
+    const validated = validateInitData(initData, token);
     if (validated?.user) {
       return {
         id: validated.user.id,

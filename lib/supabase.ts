@@ -9,8 +9,8 @@ let _supabase: SupabaseClient | null = null;
 export function getSupabase(): SupabaseClient {
   if (!_supabase) {
     const url = process.env.SUPABASE_URL;
-    const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-    if (!url || !key) throw new Error("SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY belum di-set");
+    const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_KEY;
+    if (!url || !key) throw new Error("SUPABASE_URL / SUPABASE_KEY belum di-set");
     _supabase = createClient(url, key);
   }
   return _supabase;
