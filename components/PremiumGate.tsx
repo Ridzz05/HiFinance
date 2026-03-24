@@ -31,47 +31,54 @@ export default function PremiumGate({
   // If error occurred fetching auth or the user's tier is not in the allowed list
   if (isError || !requiredTier.includes(tier.toLowerCase())) {
     return (
-      <div className="relative rounded-2xl overflow-hidden group">
+      <div style={{ position: "relative", borderRadius: 20, overflow: "hidden" }}>
         {/* The locked content (blurred permanently to entice the user) */}
-        <div className="blur-sm opacity-30 select-none pointer-events-none transition-all duration-500 saturate-50">
+        <div style={{ filter: "blur(3px)", opacity: 0.4, pointerEvents: "none", userSelect: "none" }}>
           {children}
         </div>
         
-        {/* Gate Overlay (Glassmorphism & Adaptive Theme) */}
+        {/* Gate Overlay */}
         <div 
-          className="absolute inset-0 z-10 flex flex-col items-center justify-center p-6 text-center backdrop-blur-md shadow-2xl"
           style={{ 
+            position: "absolute", top: 0, left: 0, right: 0, bottom: 0, zIndex: 10,
+            display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+            padding: 24, textAlign: "center",
             background: "color-mix(in srgb, var(--surface) 85%, transparent)",
-            border: "1px solid var(--border-hi)"
+            border: "1px solid var(--border-hi)",
+            borderRadius: 20,
+            backdropFilter: "blur(8px)",
+            WebkitBackdropFilter: "blur(8px)"
           }}
         >
           <div 
-            className="w-12 h-12 rounded-full flex items-center justify-center mb-3 ring-1"
             style={{
-              background: "var(--income-dim)",
-              boxShadow: "0 0 15px var(--income-dim)",
-              color: "var(--income)",
-              borderColor: "color-mix(in srgb, var(--income) 40%, transparent)"
+              width: 44, height: 44, borderRadius: 14,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              background: "var(--pill-bg)", border: "1px solid var(--border-hi)",
+              marginBottom: 12
             }}
           >
-            <Lock className="w-5 h-5" />
+            <Lock size={20} color="var(--pill-active-bg)" />
           </div>
           
-          <h3 className="font-semibold text-lg mb-1 tracking-tight" style={{ color: "var(--text)" }}>
+          <h3 style={{ fontSize: 16, fontWeight: 700, color: "var(--text)", marginBottom: 6, letterSpacing: "-0.01em" }}>
             Fitur Eksklusif
           </h3>
           
-          <p className="text-xs sm:text-sm mb-5 leading-relaxed max-w-xs" style={{ color: "var(--text-2)" }}>
+          <p style={{ fontSize: 12, color: "var(--text-2)", marginBottom: 18, lineHeight: 1.5, maxWidth: 280 }}>
             Akses tingkat lanjut hanya untuk pengguna Guardian. Upgrade untuk membuka wawasan penuh!
           </p>
           
           <a
-            href="/home#pricing" // Redirects to the Landing page pricing section
-            className="font-bold py-2 px-5 rounded-full transition-all transform hover:scale-105 flex items-center gap-2 text-xs sm:text-sm"
+            href="/home#pricing"
             style={{
-               background: "var(--income)",
-               color: "var(--bg)",
-               boxShadow: "0 0 20px var(--income-dim)"
+               background: "var(--pill-active-bg)",
+               color: "var(--pill-active-text)",
+               fontWeight: 600,
+               padding: "10px 20px",
+               borderRadius: 20,
+               fontSize: 12,
+               textDecoration: "none"
             }}
           >
             Upgrade Guardian
