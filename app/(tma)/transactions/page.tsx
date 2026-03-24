@@ -79,31 +79,33 @@ function ExportBanner({ onClick, loading }: { onClick: () => void; loading: bool
     <button
       onClick={onClick}
       disabled={loading}
-      style={{
-        width: "100%", padding: "14px 20px", borderRadius: 16,
-        background: "var(--surface)", border: "1px solid var(--border-hi)",
-        display: "flex", alignItems: "center", justifyContent: "space-between",
-        cursor: loading ? "not-allowed" : "pointer",
-        opacity: loading ? 0.6 : 1, transition: "opacity 0.15s",
-      }}
+      className={`relative w-full overflow-hidden p-[16px_20px] rounded-2xl flex items-center justify-between border transition-all duration-300 ${
+        loading 
+          ? "opacity-60 cursor-not-allowed border-emerald-500/20 bg-slate-800/40" 
+          : "cursor-pointer border-emerald-500/30 bg-slate-900/60 hover:bg-slate-800/80 backdrop-blur-md shadow-[0_4px_20px_rgba(16,185,129,0.1)] hover:shadow-[0_4px_25px_rgba(16,185,129,0.2)]"
+      }`}
     >
-      <div style={{ textAlign: "left" }}>
-        <p style={{ fontSize: 13, fontWeight: 700, color: "var(--text)", marginBottom: 3 }}>
+      <div className="absolute inset-0 bg-linear-to-r from-emerald-500/5 to-transparent pointer-events-none" />
+      <div className="text-left relative z-10">
+        <p className="text-[14px] font-bold text-white mb-1 flex items-center gap-2 tracking-tight">
           Unduh Rekap Excel
+          <span className="px-1.5 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+            PRO
+          </span>
         </p>
-        <p style={{ fontSize: 11, color: "var(--text-2)", lineHeight: 1.4 }}>
-          Ekspor semua transaksi ke file .xlsx
+        <p className="text-[11px] text-slate-400 leading-relaxed font-medium">
+          Ekspor semua transaksi bulanan ke format .xlsx
         </p>
       </div>
-      <div style={{
-        width: 40, height: 40, borderRadius: 12, flexShrink: 0, marginLeft: 16,
-        display: "flex", alignItems: "center", justifyContent: "center",
-        background: "var(--pill-active-bg)", color: "var(--pill-active-text)",
-      }}>
+      <div className={`w-10 h-10 rounded-xl shrink-0 ml-4 flex items-center justify-center relative z-10 transition-transform duration-300 ${
+        loading 
+          ? "bg-slate-800 text-slate-400" 
+          : "bg-linear-to-br from-emerald-500 to-emerald-400 text-slate-900 shadow-[0_0_15px_rgba(16,185,129,0.3)] hover:scale-105"
+      }`}>
         {loading ? (
-          <span style={{ width: 16, height: 16, border: "2px solid currentColor", borderTopColor: "transparent", borderRadius: "50%", display: "inline-block", animation: "spin 0.8s linear infinite" }} />
+          <span className="w-4 h-4 rounded-full border-2 border-slate-500 border-t-transparent animate-spin inline-block" />
         ) : (
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
             <polyline points="7 10 12 15 17 10"/>
             <line x1="12" y1="15" x2="12" y2="3"/>
