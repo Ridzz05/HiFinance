@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { MessageSquareText, ScanLine, BarChart3, FileSpreadsheet, Bot, Shield, Zap, ArrowRight } from "lucide-react";
+import { MessageSquareText, ScanLine, BarChart3, FileSpreadsheet, Bot, Shield, Zap, ArrowRight, PieChart, RefreshCcw, Search, Sparkles, Smartphone, Fingerprint, Database } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
@@ -100,41 +100,70 @@ const FAQS = [
 ];
 
 /* ─── Feature cards for bento grid ─── */
-const FEATURES = [
+const BOT_FEATURES = [
   {
-    title: "AI Chat Tracker",
-    description: "Cukup ketik pesan seperti 'Makan siang 25rb' atau 'Gajian 5 juta'. AI natural language kami akan otomatis membedah nominal, kategori, dan jenis transaksi. Tanpa form ribet!",
+    title: "Pencatatan Natural Language",
+    description: "Cukup ketik pesan sehari-hari seperti 'Makan ayam geprek 25rb'. LLM AI otomatis mengekstrak nominal, memprediksi jenis transaksi, dan mengklasifikasikan kategorinya. Tidak perlu pakai format kaku.",
     icon: MessageSquareText,
-    span: "md:col-span-8",
+    span: "md:col-span-8 lg:col-span-6",
     glow: "from-aqua/20",
+    color: "text-aqua",
   },
   {
-    title: "Scan Struk (Vision AI)",
-    description: "Jepret dan kirim foto struk belanja. Bot akan mengekstrak total belanja dan merchant dalam hitungan detik.",
+    title: "Pemindaian Struk Belanja",
+    description: "Malas mencatat barang belanjaan? Cukup jepret dan kirim foto struk ke bot. Vision AI kami akan mendeteksi nama merchant dan menjumlahkan total belanja seketika.",
     icon: ScanLine,
-    span: "md:col-span-4",
-    glow: "from-aqua/20",
+    span: "md:col-span-4 lg:col-span-6",
+    glow: "from-purple-500/20",
+    color: "text-purple-400",
   },
   {
-    title: "Dashboard Web (TMA)",
-    description: "Grafik interaktif dan chart porsi pengeluaran langsung bisa diakses lewat menu Telegram Mini App.",
+    title: "Dashboard TMA Interaktif",
+    description: "Tak perlu aplikasi eksternal. Kami menyediakan Telegram Mini App yang berjalan mulus dengan chart dinamis, statistik porsi pengeluaran, dan UI responsif ala aplikasi iOS modern.",
     icon: BarChart3,
-    span: "md:col-span-4",
-    glow: "from-aqua/20",
+    span: "md:col-span-12 lg:col-span-8",
+    glow: "from-emerald-500/20",
+    color: "text-emerald-400",
   },
   {
-    title: "Rekap & Filter Cepat",
-    description: "Pantau arus kas dengan command /summary atau cek histori kategori tertentu menggunakan /lihat.",
-    icon: Bot,
-    span: "md:col-span-4",
-    glow: "from-aqua/20",
+    title: "Rekap & Agregat Bulanan",
+    description: "Akses command /summary untuk evaluasi kesehatan finansial langsung dari chat. Anda akan menerima total agregat serta sisa limit budget bulanan.",
+    icon: PieChart,
+    span: "md:col-span-6 lg:col-span-4",
+    glow: "from-yellow-400/20",
+    color: "text-yellow-400",
   },
   {
-    title: "Export Laporan Excel",
-    description: "Mempersiapkan laporan bulanan? Download seluruh data transaksimu dalam format .xlsx hanya dengan satu klik.",
+    title: "Filter & Riwayat Detail",
+    description: "Cari riwayat transaksi berdasarkan kategori? Panggil /lihat, pilih kategori seperti Transportasi atau Makanan, lalu dapatkan daftar transaksinya.",
+    icon: Search,
+    span: "md:col-span-6 lg:col-span-4",
+    glow: "from-blue-400/20",
+    color: "text-blue-400",
+  },
+  {
+    title: "Export Utuh via Excel",
+    description: "Cetak laporan historis seluruh catatan transaksi dalam format komprehensif Excel (.xlsx) untuk digunakan dalam pembukuan atau audit akuntansi.",
     icon: FileSpreadsheet,
-    span: "md:col-span-4",
-    glow: "from-aqua/20",
+    span: "md:col-span-6 lg:col-span-4",
+    glow: "from-indigo-400/20",
+    color: "text-indigo-400",
+  },
+  {
+    title: "Aman dengan Manajemen CRUD",
+    description: "Manusiawi jika terjadi salah ketik. /hapus menghadirkan proteksi via Inline Keyboard untuk membatalkan catatan terakhir atau keseluruhan satu kategori tanpa repot.",
+    icon: RefreshCcw,
+    span: "md:col-span-6 lg:col-span-4",
+    glow: "from-orange-400/20",
+    color: "text-orange-400",
+  },
+  {
+    title: "Hak Privasi Mutlak (Reset)",
+    description: "Genggam kontrol mutlak atas riwayat data Anda di awan. Fitur /reset memastikan database Anda terhapus secara permanen jika Anda memutuskan untuk berhenti.",
+    icon: Shield,
+    span: "md:col-span-12 lg:col-span-12 text-center",
+    glow: "from-rose-500/20",
+    color: "text-rose-400",
   },
 ];
 
@@ -285,43 +314,131 @@ function Hero() {
   );
 }
 
-/* ─────────────────────────────── FEATURES (BENTO) ────────────────────────── */
-function Features() {
+/* ─────────────────────────────── CORE CAPABILITIES (BENTO) ────────────────────────── */
+function Capabilities() {
   return (
-    <section id="features" className="py-32 w-full relative z-10">
-      <div className="pointer-events-none absolute inset-0 bg-linear-to-b from-transparent via-slate-900/5 to-transparent" />
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <AnimatedSection className="text-center mb-20 max-w-2xl mx-auto">
-          <h2 className="text-4xl font-extrabold tracking-tight text-slate-50 sm:text-5xl">
-            Pencatatan Otomatis <span className="text-aqua">Tanpa Repot.</span>
+    <section id="features" className="py-32 w-full relative z-10 overflow-hidden">
+      {/* Decorative Glows */}
+      <div className="absolute top-1/4 left-[-10%] w-[500px] h-[500px] bg-aqua/10 blur-[150px] rounded-full pointer-events-none" />
+      <div className="absolute bottom-1/4 right-[-10%] w-[600px] h-[600px] bg-purple-500/10 blur-[150px] rounded-full pointer-events-none" />
+      
+      <div className="mx-auto max-w-7xl px-6 lg:px-8 relative z-10">
+        <AnimatedSection className="text-center mb-24 max-w-3xl mx-auto">
+          <div className="mb-6 inline-flex w-fit items-center gap-2 rounded-full border border-aqua/30 bg-aqua/10 px-4 py-1.5 backdrop-blur-sm">
+            <Sparkles className="h-4 w-4 text-aqua" />
+            <span className="text-xs font-semibold uppercase tracking-wider text-aqua">Menyeluruh & Powerful</span>
+          </div>
+          <h2 className="text-4xl font-extrabold tracking-tight text-slate-50 sm:text-5xl lg:text-6xl leading-tight">
+            Satu AI Bot untuk <br />
+            <span className="text-transparent bg-clip-text bg-linear-to-r from-aqua to-emerald-400">Semua Kebutuhan Finansialmu.</span>
           </h2>
-          <p className="mt-6 text-xl text-slate-400 max-w-2xl mx-auto">
-            Diberdayakan oleh Aiogram, Gemini AI, dan Supabase Database, rasakan pengalaman manajemen keuangan mutakhir dari seutas chat.
+          <p className="mt-6 text-lg text-slate-400 max-w-2xl mx-auto">
+            Kami membawa otomatisasi cerdas ke dalam grup obrolan pribadi Anda. Tanpa form rumit, hanya command ringkas di Telegram yang kaya akan fitur mumpuni.
           </p>
         </AnimatedSection>
 
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 overflow-hidden mt-12">
-          {FEATURES.map((feat, i) => {
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
+          {BOT_FEATURES.map((feat, i) => {
             const delayClass = i === 1 ? "animate__delay-1s" : i > 1 ? "animate__delay-2s" : "";
+            const isFullWidthCenter = feat.span.includes("lg:col-span-12");
+            
             return (
               <AnimatedSection
                 key={feat.title}
                 animation="animate__fadeInUp"
                 delay={delayClass}
-                className={`group relative overflow-hidden rounded-3xl p-8 shadow-2xl transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1 ${feat.span} glass-card`}
+                className={`group relative overflow-hidden rounded-3xl p-8 sm:p-10 shadow-2xl transition-all duration-300 hover:scale-[1.02] hover:-translate-y-2 ${feat.span} glass-card border border-white/10 hover:border-white/20 bg-slate-900/40`}
               >
-                {/* Icon */}
-                <div className="mb-6 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-white/5 border border-white/10 transition-colors shadow-lg group-hover:bg-aqua/10 group-hover:border-aqua/30">
-                  <feat.icon className="h-7 w-7 text-aqua drop-shadow-[0_0_8px_rgba(0,255,255,0.4)]" />
+                {/* Icon wrapper */}
+                <div className={`mb-8 flex ${isFullWidthCenter ? "justify-center" : ""}`}>
+                  <div className={`inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-white/5 border border-white/10 transition-colors shadow-lg group-hover:bg-white/10`}>
+                    <feat.icon className={`h-8 w-8 ${feat.color} drop-shadow-[0_0_12px_currentColor]`} />
+                  </div>
                 </div>
-                {/* Text */}
-                <h3 className="mb-3 text-2xl font-bold text-slate-50 tracking-tight">{feat.title}</h3>
-                <p className="text-slate-400 leading-relaxed text-sm">{feat.description}</p>
-                {/* Hover glow */}
-                <div className={`absolute -right-16 -top-16 h-48 w-48 rounded-full blur-[80px] opacity-0 transition-opacity duration-500 group-hover:opacity-100 bg-linear-to-br ${feat.glow} to-transparent`} />
+                
+                {/* Content */}
+                <div className={`relative z-10 ${isFullWidthCenter ? "flex flex-col items-center text-center max-w-4xl mx-auto" : ""}`}>
+                  <h3 className="mb-4 text-2xl sm:text-3xl font-bold text-slate-50 tracking-tight">{feat.title}</h3>
+                  <p className="text-slate-400 leading-relaxed text-base">{feat.description}</p>
+                </div>
+                
+                {/* Glow Background */}
+                <div className={`absolute ${isFullWidthCenter ? 'left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2' : '-right-20 -top-20'} h-64 w-64 rounded-full blur-[100px] opacity-0 transition-opacity duration-700 group-hover:opacity-40 bg-linear-to-br ${feat.glow} to-transparent pointer-events-none`} />
               </AnimatedSection>
             );
           })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─────────────────────────────── HOW IT WORKS ─────────────────────────────── */
+function HowItWorks() {
+  const steps = [
+    {
+      num: "01",
+      title: "Hubungkan di Telegram",
+      desc: "Cari @hifinance_bot lalu tekan tombol mulai. Tanpa perlu mendaftar dengan email atau password panjang.",
+      icon: Smartphone,
+    },
+    {
+      num: "02",
+      title: "Curhat Finansial",
+      desc: "Ketik transaksi sesukamu—bahkan dengan gaya bahasa yang santai, AI kami memahaminya secara semantik.",
+      icon: Database,
+    },
+    {
+      num: "03",
+      title: "Monitoring Berbasis Web",
+      desc: "Buka Telegram WebApp untuk mengecek distribusi pengeluaran melalui chart dan diagram layaknya aplikasi asli.",
+      icon: BarChart3,
+    }
+  ];
+
+  return (
+    <section className="py-24 w-full relative z-10 border-t border-white/5 bg-slate-950/50 overflow-hidden">
+      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+        <div className="flex flex-col md:flex-row gap-16 items-center">
+          {/* Left Text */}
+          <AnimatedSection className="md:w-1/3 text-left">
+            <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight text-slate-50 leading-tight">
+              Bagaimana <br />
+              <span className="text-aqua">Cara Kerjanya?</span>
+            </h2>
+            <p className="mt-6 text-slate-400 text-lg leading-relaxed">
+              Arsitektur cerdas yang menghubungkan kenyamanan obrolan Telegram dengan mesin AI yang tangguh di awan.
+            </p>
+          </AnimatedSection>
+
+          {/* Right Steps */}
+          <div className="md:w-2/3 grid grid-cols-1 sm:grid-cols-3 gap-8 relative">
+            {/* Connecting Line (for desktop) */}
+            <div className="hidden sm:block absolute top-[50px] left-[10%] w-[80%] h-px bg-linear-to-r from-transparent via-aqua/50 to-transparent z-0" />
+
+            {steps.map((step, idx) => {
+              const delayClass = idx === 1 ? "animate__delay-1s" : idx === 2 ? "animate__delay-2s" : "";
+              return (
+                <AnimatedSection 
+                  key={step.num}
+                  animation="animate__fadeInUp"
+                  delay={delayClass}
+                  className="relative z-10 flex flex-col items-start bg-slate-900/80 p-8 rounded-3xl glass-card border border-white/5 shadow-2xl hover:-translate-y-2 transition-transform duration-300"
+                >
+                  <div className="mb-5 flex items-center justify-center w-12 h-12 rounded-full bg-slate-800 border border-slate-700 shadow-inner">
+                    <step.icon className="h-5 w-5 text-aqua" />
+                  </div>
+                  <h4 className="text-xl font-bold text-slate-50 mb-3">{step.title}</h4>
+                  <p className="text-sm text-slate-400 leading-relaxed">{step.desc}</p>
+                  
+                  {/* Big faded number */}
+                  <div className="absolute top-4 right-4 text-5xl font-black text-white/5 select-none pointer-events-none">
+                    {step.num}
+                  </div>
+                </AnimatedSection>
+              );
+            })}
+          </div>
         </div>
       </div>
     </section>
@@ -448,7 +565,8 @@ export default function LandingPage() {
         <Navbar />
         <main>
           <Hero />
-          <Features />
+          <Capabilities />
+          <HowItWorks />
           <FAQSection />
           <FinalCTA />
         </main>
