@@ -214,6 +214,7 @@ function Navbar() {
   const NAV_LINKS = [
     { label: "Fitur", href: "#features" },
     { label: "Cara Kerja", href: "#how-it-works" },
+    { label: "Harga", href: "#pricing" },
     { label: "FAQ", href: "#faq" },
   ];
 
@@ -590,6 +591,182 @@ function HowItWorks() {
   );
 }
 
+/* ─────────────────────────────── PRICING ──────────────────────────────────── */
+const CHECK = (
+  <svg className="h-4 w-4 text-aqua shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+  </svg>
+);
+
+function PricingSection() {
+  const tiers = [
+    {
+      name: "Starter",
+      badge: null,
+      price: "Rp 0",
+      period: "/ selamanya",
+      strikePrice: null,
+      features: [
+        "Maksimal 30 transaksi/bulan",
+        "Input manual teks",
+        "Dashboard dasar",
+        "Standard Health Score",
+      ],
+      cta: "Mulai Gratis",
+      href: "https://t.me/hifinance_bot",
+      style: "outline" as const,
+      cardClass: "opacity-90",
+      borderClass: "border-white/10",
+      glowClass: "",
+    },
+    {
+      name: "Guardian",
+      badge: { text: "Paling Populer", color: "bg-aqua text-slate-900" },
+      price: "Rp 29.000",
+      period: "/ bulan",
+      strikePrice: null,
+      features: [
+        "Transaksi Unlimited",
+        "🎙️ Unlimited Voice Note AI",
+        "📸 Scan Struk (50/bulan)",
+        "Notifikasi Proaktif \"Dompet Kritis\"",
+        "Full Analytics & Export PDF/XLSX",
+      ],
+      cta: "Berlangganan",
+      href: "https://t.me/hifinance_bot",
+      style: "solid" as const,
+      cardClass: "",
+      borderClass: "border-aqua/30",
+      glowClass: "",
+    },
+    {
+      name: "Founder's Pass",
+      badge: { text: "LTD - Sisa 24 Kuota", color: "bg-yellow text-slate-900 animate-pulse" },
+      price: "Rp 299.000",
+      period: "/ sekali bayar",
+      strikePrice: "Rp 999.000",
+      features: [
+        "Semua fitur Paket Guardian",
+        "Akses Selamanya (Tanpa langganan)",
+        'Badge "Pioneer" di Dashboard',
+        "Prioritas Update Fitur Baru",
+      ],
+      cta: "Ambil Akses Selamanya",
+      href: "https://t.me/hifinance_bot",
+      style: "gradient" as const,
+      cardClass: "md:scale-105 shadow-[0_0_40px_rgba(255,215,0,0.15)]",
+      borderClass: "border-yellow/30",
+      glowClass: "pricing-founder-glow",
+    },
+  ];
+
+  return (
+    <section id="pricing" className="py-32 w-full relative z-10 overflow-hidden">
+      {/* Background accent */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[500px] bg-aqua/5 rounded-full blur-[180px] pointer-events-none" />
+
+      <div className="mx-auto max-w-7xl px-6 lg:px-8 relative z-10">
+        <FadeIn className="text-center mb-20 max-w-3xl mx-auto">
+          <h2 className="text-4xl font-extrabold tracking-tight text-slate-50 sm:text-5xl lg:text-6xl leading-tight">
+            Pilih Paket <span className="text-aqua">yang Cocok.</span>
+          </h2>
+          <p className="mt-6 text-lg text-slate-400 max-w-2xl mx-auto">
+            Mulai gratis, upgrade kapan saja. Semua paket termasuk akses penuh ke bot Telegram dan dashboard TMA.
+          </p>
+        </FadeIn>
+
+        <motion.div
+          variants={staggerContainer}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-80px" }}
+          className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start"
+        >
+          {tiers.map((tier) => (
+            <motion.div
+              key={tier.name}
+              variants={staggerItem}
+              whileHover={{ y: -8 }}
+              transition={{ type: "spring", stiffness: 300 }}
+              className={`relative flex flex-col rounded-3xl p-8 sm:p-10 glass-card ${tier.borderClass} bg-slate-900/40 backdrop-blur-xl ${tier.cardClass} ${tier.glowClass}`}
+            >
+              {/* Badge */}
+              {tier.badge && (
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2">
+                  <span className={`inline-block rounded-full px-5 py-1.5 text-xs font-bold tracking-wide ${tier.badge.color}`}>
+                    {tier.badge.text}
+                  </span>
+                </div>
+              )}
+
+              {/* Tier name */}
+              <h3 className="text-xl font-bold text-slate-50 tracking-tight mt-2">{tier.name}</h3>
+
+              {/* Price */}
+              <div className="mt-6 mb-8">
+                {tier.strikePrice && (
+                  <s className="text-slate-500 text-lg font-medium tabular-nums tracking-tight">{tier.strikePrice}</s>
+                )}
+                <div className="flex items-baseline gap-2">
+                  <span className="text-4xl sm:text-5xl font-extrabold text-slate-50 tabular-nums tracking-tight">
+                    {tier.price}
+                  </span>
+                  <span className="text-sm text-slate-400 font-medium">{tier.period}</span>
+                </div>
+              </div>
+
+              {/* Divider */}
+              <div className="h-px w-full bg-white/10 mb-8" />
+
+              {/* Features */}
+              <ul className="flex flex-col gap-4 mb-10 flex-1">
+                {tier.features.map((feat) => (
+                  <li key={feat} className="flex items-start gap-3 text-sm text-slate-300 leading-relaxed">
+                    {CHECK}
+                    {feat}
+                  </li>
+                ))}
+              </ul>
+
+              {/* CTA Button */}
+              {tier.style === "outline" && (
+                <Link
+                  href={tier.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full text-center rounded-2xl border border-white/20 px-6 py-3.5 text-sm font-bold text-slate-200 transition-all duration-300 hover:border-aqua/50 hover:text-aqua hover:shadow-lg hover:shadow-aqua/10"
+                >
+                  {tier.cta}
+                </Link>
+              )}
+              {tier.style === "solid" && (
+                <Link
+                  href={tier.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full text-center rounded-2xl bg-aqua px-6 py-3.5 text-sm font-bold text-slate-900 shadow-lg shadow-aqua/20 transition-all duration-300 hover:scale-[1.03] hover:shadow-aqua/40 active:scale-95"
+                >
+                  {tier.cta}
+                </Link>
+              )}
+              {tier.style === "gradient" && (
+                <Link
+                  href={tier.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full text-center rounded-2xl bg-linear-to-r from-yellow to-orange-500 px-6 py-3.5 text-sm font-bold text-slate-900 shadow-lg shadow-yellow/20 transition-all duration-300 hover:scale-[1.03] hover:shadow-yellow/40 active:scale-95"
+                >
+                  {tier.cta}
+                </Link>
+              )}
+            </motion.div>
+          ))}
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
 /* ─────────────────────────────── FAQ ──────────────────────────────────────── */
 function FAQSection() {
   return (
@@ -770,6 +947,7 @@ export default function LandingPage() {
           <Hero />
           <Capabilities />
           <HowItWorks />
+          <PricingSection />
           <FAQSection />
           <FinalCTA />
         </main>
