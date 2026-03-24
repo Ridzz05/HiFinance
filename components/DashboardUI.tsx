@@ -9,7 +9,7 @@ import { MonthlySummary, Transaction } from "@/lib/types";
 
 declare global {
   interface Window {
-    Telegram?: { WebApp?: { initData?: string; ready?: () => void; expand?: () => void } };
+    Telegram?: { WebApp?: { initData?: string; initDataUnsafe?: any; ready?: () => void; expand?: () => void } };
   }
 }
 

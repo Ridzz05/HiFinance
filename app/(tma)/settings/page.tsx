@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import PremiumGate from "@/components/PremiumGate";
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -58,7 +59,10 @@ export default function SettingsPage() {
         body: JSON.stringify(payload),
       });
 
-      if (!res.ok) throw new Error("Gagal menyimpan pengaturan");
+      if (!res.ok) {
+         const err = await res.json().catch(() => ({}));
+         throw new Error(err.error || "Gagal menyimpan pengaturan");
+      }
       setMessage({ text: "Berhasil disimpan!", type: "success" });
       setTimeout(() => router.push("/"), 1500);
     } catch (err: any) {
@@ -70,7 +74,7 @@ export default function SettingsPage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center p-6 bg-black">
+      <div className="flex min-h-screen items-center justify-center p-6 bg-[#0c0c0c]">
         <div className="animate-spin h-8 w-8 rounded-full border-4 border-cyan-500 border-t-transparent" />
       </div>
     );
@@ -85,48 +89,50 @@ export default function SettingsPage() {
         <h1 className="text-2xl font-bold tracking-tight">Pengaturan Wallet</h1>
       </div>
 
-      <div className="rounded-3xl border border-white/10 bg-black/40 p-6 backdrop-blur-md shadow-xl">
-        <h2 className="text-lg font-semibold text-cyan-400 mb-2">Wallet Guardian</h2>
-        <p className="text-sm text-slate-400 mb-6 leading-relaxed">
-          Tentukan batas pengeluaran bulananmu. HiFinance akan memantau kesehatan finansialmu dan memberikan peringatan kuning jika kamu mendekati batas.
-        </p>
+      <PremiumGate requiredTier={["guardian", "founder"]}>
+        <div className="rounded-3xl border border-white/10 bg-black/40 p-6 backdrop-blur-md shadow-xl">
+          <h2 className="text-lg font-semibold text-cyan-400 mb-2">Wallet Guardian</h2>
+          <p className="text-sm text-slate-400 mb-6 leading-relaxed">
+            Tentukan batas pengeluaran bulananmu. HiFinance akan memantau kesehatan finansialmu dan memberikan peringatan kuning jika kamu mendekati batas.
+          </p>
 
-        <form onSubmit={handleSave} className="flex flex-col gap-6">
-          <div className="flex flex-col gap-2">
-            <label htmlFor="budget" className="text-sm font-semibold text-slate-300">
-              Batas Pengeluaran Bulanan (Rp)
-            </label>
-            <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-medium">Rp</span>
-              <input
-                id="budget"
-                type="number"
-                min="0"
-                step="50000"
-                required
-                value={budgetLimit}
-                onChange={(e) => setBudgetLimit(e.target.value)}
-                placeholder="5000000"
-                className="w-full rounded-2xl border border-white/10 bg-white/5 py-4 pl-12 pr-4 text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 transition-all font-medium"
-              />
+          <form onSubmit={handleSave} className="flex flex-col gap-6">
+            <div className="flex flex-col gap-2">
+              <label htmlFor="budget" className="text-sm font-semibold text-slate-300">
+                Batas Pengeluaran Bulanan (Rp)
+              </label>
+              <div className="relative">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-medium">Rp</span>
+                <input
+                  id="budget"
+                  type="number"
+                  min="0"
+                  step="50000"
+                  required
+                  value={budgetLimit}
+                  onChange={(e) => setBudgetLimit(e.target.value)}
+                  placeholder="5000000"
+                  className="w-full rounded-2xl border border-white/10 bg-white/5 py-4 pl-12 pr-4 text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 transition-all font-medium"
+                />
+              </div>
             </div>
-          </div>
 
-          {message.text && (
-            <div className={`rounded-xl p-4 text-sm font-medium ${message.type === 'success' ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20' : 'bg-yellow-400/10 text-yellow-400 border border-yellow-400/20'}`}>
-              {message.text}
-            </div>
-          )}
+            {message.text && (
+              <div className={`rounded-xl p-4 text-sm font-medium ${message.type === 'success' ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20' : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'}`}>
+                {message.text}
+              </div>
+            )}
 
-          <button
-            type="submit"
-            disabled={saving}
-            className="mt-4 flex w-full items-center justify-center rounded-2xl bg-cyan-500 py-4 font-bold text-black hover:bg-cyan-400 active:scale-[0.98] transition-all disabled:opacity-50 disabled:active:scale-100"
-          >
-            {saving ? "Menyimpan..." : "Simpan Pengaturan"}
-          </button>
-        </form>
-      </div>
+            <button
+              type="submit"
+              disabled={saving}
+              className="mt-4 flex w-full items-center justify-center rounded-2xl bg-cyan-500 py-4 font-bold text-black hover:bg-cyan-400 active:scale-[0.98] transition-all disabled:opacity-50 disabled:active:scale-100"
+            >
+              {saving ? "Menyimpan..." : "Simpan Pengaturan"}
+            </button>
+          </form>
+        </div>
+      </PremiumGate>
     </div>
   );
 }

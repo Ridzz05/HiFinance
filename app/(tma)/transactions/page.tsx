@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import TransactionList from "@/components/TransactionList";
 import ThemeToggle from "@/components/ThemeToggle";
 import { Transaction } from "@/lib/types";
+import PremiumGate from "@/components/PremiumGate";
 
 type Filter = "all" | "income" | "expense";
 
@@ -263,7 +264,9 @@ export default function TransactionsPage() {
         <p style={{ fontSize: 9, letterSpacing: "0.3em", color: "var(--text-2)", textTransform: "uppercase", marginBottom: 10 }}>
           Ekspor Data
         </p>
-        <ExportBanner onClick={handleExport} loading={exporting} />
+        <PremiumGate requiredTier={["guardian", "founder"]}>
+          <ExportBanner onClick={handleExport} loading={exporting} />
+        </PremiumGate>
         <p style={{ fontSize: 10, color: "var(--text-2)", marginTop: 8, lineHeight: 1.5 }}>
           File .xlsx berisi 2 sheet: semua transaksi dan ringkasan kategori.
         </p>

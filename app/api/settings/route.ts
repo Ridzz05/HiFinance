@@ -31,12 +31,25 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Tidak terautentikasi" }, { status: 401 });
   }
 
+  const db = getSupabase();
+
+  // ── Proteksi Premium (Hanya Guardian & Founder) ──
+  const { data: userData } = await db
+    .from("users")
+    .select("tier")
+    .eq("telegram_id", user.id)
+    .single();
+
+  const tier = userData?.tier || "free";
+  if (tier === "free") {
+    return NextResponse.json({ error: "Pengaturan Wallet Guardian eksklusif untuk tier Guardian/Founder." }, { status: 403 });
+  }
+
   const budget_limit = Number(body.budget_limit);
   if (isNaN(budget_limit) || budget_limit < 0) {
     return NextResponse.json({ error: "Budget tidak valid" }, { status: 400 });
   }
 
-  const db = getSupabase();
   
   // Upsert settings (requires RLS policy permitting INSERT/UPDATE)
   const { error } = await db

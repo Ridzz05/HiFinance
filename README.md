@@ -1,36 +1,64 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# HiFinance Telegram Mini App (TMA)
 
-## Getting Started
+Ini adalah komponen frontend web untuk HiFinance, yang berfungsi sebagai Dashboard interaktif bagi pengguna di dalam Telegram (Mini App) serta Landing Page publik.
 
-First, run the development server:
+## 🚀 Teknologi yang Digunakan
+- **Next.js 16 (App Router)**: Framework React full-stack terbaru.
+- **React 19**: Library UI dengan fitur Concurrent Rendering.
+- **Tailwind CSS v4 & CSS Variables**: Sistem styling yang sangat teroptimasi dengan dukungan tema gelap/terang secara native.
+- **Framer Motion**: Library untuk animasi premium dan transisi halus.
+- **Recharts**: Library grafik untuk visualisasi pengeluaran bulanan.
+- **Supabase JS SDK**: Berinteraksi dengan database untuk mengambil riwayat transaksi.
+- **Telegram Apps SDK**: Integrasi mendalam dengan antarmuka Telegram (ThemeParams, InitData, Haptic Feedback).
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 📁 Struktur Proyek & Penjelasan File
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 1. `app/` (Next.js App Router)
+Menggunakan fitur **Route Groups** untuk memisahkan logika layout:
+- `layout.tsx`: Root layout utama yang menangani font (Plus Jakarta Sans) dan metadata dasar.
+- `globals.css`: Definisi token desain (warna, spacing, animasi) untuk tema Dark dan Light.
+- **`(tma)/`**: Folder khusus untuk antarmuka dalam Telegram.
+  - `layout.tsx`: Menyuntikkan SDK Telegram, mengatur lebar maksimal mobile (390px), dan memuat `BottomNav`.
+  - `page.tsx`: Dashboard utama yang memanggil komponen `DashboardUI`.
+- **`home/`**: Landing Page publik.
+  - `page.tsx`: Berisi section Hero, Features (Bento Grid), FAQ, dan Footer. Memiliki gaya desain yang berbeda dari dashboard.
+- **`(admin)/`**: Antarmuka dashboard admin desktop-first.
+- **`api/`**: API Route Handlers (Back-end)
+  - `summary/`: Mengambil agregasi data untuk grafik dashboard.
+  - `transactions/`: Mengambil list riwayat transaksi.
+  - `export/`: Menghasilkan file Excel (.xlsx) untuk diunduh pengguna.
+  - `settings/`: Mengelola preferensi pengguna (bujet, limit).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 2. `components/`
+- `DashboardUI.tsx`: Komponen utama dashboard. Mengatur *state* loading, error, dan pengambilan data dari API.
+- `BalanceCard.tsx`: Menampilkan saldo total, pemasukan, dan pengeluaran dengan visual yang premium.
+- `CategoryChart.tsx`: Visualisasi pengeluaran per kategori menggunakan Pie Chart yang interaktif.
+- `TransactionList.tsx`: Komponen untuk menampilkan daftar transaksi terbaru dengan ikon kategori.
+- `landing/`: Sub-folder berisi komponen khusus landing page (BentoGrid, Hero, FAQ, Footer, Navbar).
+- `ui/`: Komponen dasar yang *reusable* (Button, Input, Card, dll).
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 3. `lib/` (Core Logic)
+- `supabase.ts`: Inisialisasi klien Supabase dengan *Service Role Key* untuk operasi server-side yang aman.
+- `validate-init-data.ts`: Logika keamanan kritis untuk memvalidasi `initData` Telegram menggunakan HMAC-SHA256 agar data tidak bisa dipalsukan.
+- `health-logic.ts`: Algoritma perhitungan skor kesehatan keuangan berdasarkan rasio pengeluaran terhadap pendapatan.
 
-## Learn More
+## 🛡️ Keamanan & Validasi
+Setiap permintaan data dari frontend ke API Route melalui mekanisme validasi:
+1. Frontend mengirim `initData` dari Telegram.
+2. Back-end (`lib/validate-init-data.ts`) melakukan verifikasi tanda tangan digital menggunakan `TELEGRAM_BOT_TOKEN`.
+3. Jika valid, sistem baru akan melakukan query ke Supabase berdasarkan `user_id` yang terverifikasi.
 
-To learn more about Next.js, take a look at the following resources:
+## 🛠️ Pengembangan & Build
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Instal dependensi:
+   ```bash
+   npm install
+   ```
+2. Jalankan mode pengembangan:
+   ```bash
+   npm run dev
+   ```
+3. Build untuk produksi:
+   ```bash
+   npm run build
+   ```

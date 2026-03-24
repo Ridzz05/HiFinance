@@ -29,6 +29,19 @@ export async function POST(req: NextRequest) {
   }
 
   const userId = user.id;
+  
+  // ── Proteksi Premium (Hanya Guardian & Founder) ──
+  const { data: userData } = await getSupabase()
+    .from("users")
+    .select("tier")
+    .eq("telegram_id", userId)
+    .single();
+
+  const tier = userData?.tier || "free";
+  if (tier === "free") {
+    return NextResponse.json({ error: "Fitur Ekspor Pekerjaan eksklusif untuk Guardian/Founder." }, { status: 403 });
+  }
+
   const firstName = user.first_name ?? "User";
   const isTelegram = !!body?.initData; // Tentukan jalur output
 
