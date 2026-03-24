@@ -131,7 +131,11 @@ export default function TransactionsPage() {
       headers: { "Content-Type": "application/json" },
       body,
     })
-      .then(r => r.json()).then(setTx)
+      .then(r => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return r.json();
+      })
+      .then(setTx)
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
