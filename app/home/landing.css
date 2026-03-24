@@ -4,20 +4,8 @@
    All variables, resets, and utilities are defined here.
    ================================================================ */
 
-/* ── 1. Tailwind base & Animations ─────────────────────── */
+/* ── 1. Tailwind base ─────────────────────── */
 @import "tailwindcss";
-@import "animate.css";
-
-/* Custom float animation that animate.css lacks */
-@keyframes float {
-  0% { transform: translateY(0px) rotateY(0deg); }
-  50% { transform: translateY(-10px) rotateY(2deg); }
-  100% { transform: translateY(0px) rotateY(0deg); }
-}
-
-.animate__float {
-  animation: float 5s ease-in-out infinite;
-}
 
 /* ── 2. Custom theme tokens ─────────────────────────────────── */
 @theme {
